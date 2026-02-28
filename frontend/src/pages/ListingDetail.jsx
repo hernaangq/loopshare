@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { MapPin, Users, DollarSign, Star, Building2, Wifi, Coffee, Car, Shield, Calendar, ArrowLeft } from 'lucide-react'
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import L from 'leaflet'
 import { listings as listingsApi, bookings as bookingsApi, startups as startupsApi } from '../services/api'
 import DayChips from '../components/DayChips'
+import 'leaflet/dist/leaflet.css'
 import './ListingDetail.css'
+
+// Fix Leaflet default marker icons
+delete L.Icon.Default.prototype._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+})
 
 const AMENITY_ICONS = {
   WiFi: Wifi,
@@ -167,6 +178,41 @@ export default function ListingDetail() {
               })}
             </div>
           </div>
+
+          {/* Location Map */}
+          {building.latitude && building.longitude && (
+            <>
+              <div className="divider" />
+              <div>
+                <h3 className="detail-section-title">
+                  <MapPin size={18} /> Where you'll be
+                </h3>
+                <div className="detail-mini-map mt-4">
+                  <MapContainer
+                    center={[building.latitude, building.longitude]}
+                    zoom={16}
+                    scrollWheelZoom={false}
+                    style={{ width: '100%', height: '100%', borderRadius: '12px' }}
+                    zoomControl={true}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={[building.latitude, building.longitude]}>
+                      <Popup>
+                        <strong>{building.name}</strong><br />
+                        {building.address}
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
+                </div>
+                <p className="text-sm text-muted mt-2">
+                  {building.address} · {building.neighborhood}
+                </p>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Right: Booking Card (Airbnb sticky card) */}

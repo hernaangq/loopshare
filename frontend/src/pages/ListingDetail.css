@@ -208,9 +208,23 @@
   margin-top: 8px;
 }
 
+/* Mini Map */
+.detail-mini-map {
+  width: 100%;
+  height: 300px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--ls-gray-200);
+}
+
+.detail-mini-map .leaflet-container {
+  border-radius: var(--radius-lg);
+}
+
 @media (max-width: 768px) {
   .detail-layout { grid-template-columns: 1fr; gap: 24px; }
   .detail-sidebar { position: static; }
   .detail-hero-img { height: 260px; }
   .detail-info-grid { grid-template-columns: 1fr; }
+  .detail-mini-map { height: 220px; }
 }

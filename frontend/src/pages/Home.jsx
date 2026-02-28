@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Building2, Users, TrendingUp, ArrowRight, MapPin, Shield } from 'lucide-react'
+import { Search, Building2, Users, TrendingUp, ArrowRight, MapPin, Shield, Map } from 'lucide-react'
 import { listings as listingsApi, buildings as buildingsApi } from '../services/api'
 import ListingCard from '../components/ListingCard'
 import './Home.css'
@@ -59,6 +59,9 @@ export default function Home() {
               </Link>
             </div>
           </div>
+          <Link to="/map" className="hero-map-btn">
+            <Map size={18} /> Explore on map
+          </Link>
         </div>
       </section>
 

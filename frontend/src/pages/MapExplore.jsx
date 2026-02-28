@@ -1,35 +1,56 @@
-import { useEffect, useState, useCallback } from 'react'
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api'
+import { useEffect, useState, useRef } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import { Link } from 'react-router-dom'
-import { Building2, Users, DollarSign, MapPin } from 'lucide-react'
+import { Users, DollarSign } from 'lucide-react'
+import L from 'leaflet'
 import { buildings as buildingsApi, listings as listingsApi } from '../services/api'
 import DayChips from '../components/DayChips'
+import 'leaflet/dist/leaflet.css'
 import './MapExplore.css'
 
 // Chicago Loop center
-const CENTER = { lat: 41.8819, lng: -87.6278 }
+const CENTER = [41.8819, -87.6278]
 
-const MAP_STYLES = [
-  { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-  { featureType: 'transit', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-]
+// Fix default Leaflet marker icon paths (Vite/Webpack issue)
+delete L.Icon.Default.prototype._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+})
 
-const containerStyle = { width: '100%', height: '100%' }
+// Custom marker icons using DivIcon
+function createMarkerIcon(hasListings) {
+  return new L.DivIcon({
+    className: 'custom-div-marker',
+    html: `<div class="marker-pin ${hasListings ? 'marker-active' : 'marker-inactive'}">
+             <div class="marker-inner"></div>
+           </div>`,
+    iconSize: [30, 42],
+    iconAnchor: [15, 42],
+    popupAnchor: [0, -42],
+  })
+}
+
+// Component to fly to a building when selected
+function FlyToBuilding({ building }) {
+  const map = useMap()
+  useEffect(() => {
+    if (building?.latitude && building?.longitude) {
+      map.flyTo([building.latitude, building.longitude], 17, { duration: 0.8 })
+    }
+  }, [building, map])
+  return null
+}
 
 export default function MapExplore() {
   const [buildingsList, setBuildingsList] = useState([])
   const [listingsByBuilding, setListingsByBuilding] = useState({})
   const [selectedBuilding, setSelectedBuilding] = useState(null)
-  const [map, setMap] = useState(null)
-
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY || '',
-  })
+  const markerRefs = useRef({})
 
   useEffect(() => {
-    buildingsApi.getAll().then(data => {
-      setBuildingsList(data)
-    })
+    buildingsApi.getAll().then(setBuildingsList)
     listingsApi.getActive().then(data => {
       const grouped = {}
       data.forEach(l => {
@@ -43,42 +64,12 @@ export default function MapExplore() {
     })
   }, [])
 
-  const onLoad = useCallback((map) => setMap(map), [])
-
-  if (loadError) {
-    return (
-      <div className="map-page">
-        <div className="map-fallback container">
-          <MapPin size={48} color="var(--ls-primary)" />
-          <h2>Map View</h2>
-          <p className="text-muted mb-4">
-            To enable the interactive map, add your Google Maps API key as <code>VITE_GOOGLE_MAPS_KEY</code> in a <code>.env</code> file in the frontend folder.
-          </p>
-          <div className="buildings-list-fallback">
-            {buildingsList.map(b => {
-              const bListings = listingsByBuilding[b.id] || []
-              return (
-                <div key={b.id} className="building-fallback-card">
-                  <img src={b.imageUrl || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400'} alt={b.name} />
-                  <div>
-                    <h3>{b.name}</h3>
-                    <p className="text-sm text-muted">{b.address}</p>
-                    <p className="text-sm">{bListings.length} listing(s) · {bListings.reduce((s, l) => s + l.desksAvailable, 0)} desks</p>
-                    {bListings.length > 0 && (
-                      <Link to={`/listings/${bListings[0].id}`} className="btn btn-sm btn-primary mt-2">View listing</Link>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (!isLoaded) {
-    return <div className="map-page"><div className="container py-12 text-center">Loading map...</div></div>
+  const handleSidebarClick = (b) => {
+    setSelectedBuilding(b)
+    setTimeout(() => {
+      const marker = markerRefs.current[b.id]
+      if (marker) marker.openPopup()
+    }, 900)
   }
 
   return (
@@ -98,13 +89,7 @@ export default function MapExplore() {
               <button
                 key={b.id}
                 className={`map-sidebar-item ${selectedBuilding?.id === b.id ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedBuilding(b)
-                  if (map && b.latitude && b.longitude) {
-                    map.panTo({ lat: b.latitude, lng: b.longitude })
-                    map.setZoom(17)
-                  }
-                }}
+                onClick={() => handleSidebarClick(b)}
               >
                 <img src={b.imageUrl || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=200'} alt={b.name} className="sidebar-item-img" />
                 <div className="sidebar-item-info">
@@ -123,63 +108,54 @@ export default function MapExplore() {
 
       {/* Map */}
       <div className="map-container">
-        <GoogleMap
-          mapContainerStyle={containerStyle}
+        <MapContainer
           center={CENTER}
           zoom={15}
-          onLoad={onLoad}
-          options={{
-            styles: MAP_STYLES,
-            disableDefaultUI: false,
-            zoomControl: true,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: true,
-          }}
+          style={{ width: '100%', height: '100%' }}
+          zoomControl={true}
         >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+          {selectedBuilding && <FlyToBuilding building={selectedBuilding} />}
+
           {buildingsList.map(b => {
             if (!b.latitude || !b.longitude) return null
             const bListings = listingsByBuilding[b.id] || []
             return (
               <Marker
                 key={b.id}
-                position={{ lat: b.latitude, lng: b.longitude }}
-                title={b.name}
-                onClick={() => setSelectedBuilding(b)}
-                icon={{
-                  path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-                  fillColor: bListings.length > 0 ? '#FF385C' : '#767676',
-                  fillOpacity: 1,
-                  strokeWeight: 1,
-                  strokeColor: '#fff',
-                  scale: 1.8,
-                  anchor: { x: 12, y: 24 },
+                position={[b.latitude, b.longitude]}
+                icon={createMarkerIcon(bListings.length > 0)}
+                ref={(ref) => { if (ref) markerRefs.current[b.id] = ref }}
+                eventHandlers={{
+                  click: () => setSelectedBuilding(b),
                 }}
-              />
+              >
+                <Popup maxWidth={300} className="custom-popup">
+                  <div className="map-info-window">
+                    <h4>{b.name}</h4>
+                    <p className="popup-address">{b.address}</p>
+                    {bListings.length > 0 ? (
+                      bListings.map(l => (
+                        <Link key={l.id} to={`/listings/${l.id}`} className="map-info-listing">
+                          <span className="map-info-listing-text">
+                            {l.desksAvailable} desks &middot; ${l.pricePerDeskPerDay}/day
+                          </span>
+                          <DayChips days={l.daysAvailable} compact />
+                        </Link>
+                      ))
+                    ) : (
+                      <p className="popup-empty">No active listings in this building.</p>
+                    )}
+                  </div>
+                </Popup>
+              </Marker>
             )
           })}
-
-          {selectedBuilding && selectedBuilding.latitude && (
-            <InfoWindow
-              position={{ lat: selectedBuilding.latitude, lng: selectedBuilding.longitude }}
-              onCloseClick={() => setSelectedBuilding(null)}
-            >
-              <div className="map-info-window">
-                <h4>{selectedBuilding.name}</h4>
-                <p className="text-xs text-muted">{selectedBuilding.address}</p>
-                {(listingsByBuilding[selectedBuilding.id] || []).map(l => (
-                  <Link key={l.id} to={`/listings/${l.id}`} className="map-info-listing">
-                    <span>{l.desksAvailable} desks · ${l.pricePerDeskPerDay}/day</span>
-                    <DayChips days={l.daysAvailable} compact />
-                  </Link>
-                ))}
-                {(listingsByBuilding[selectedBuilding.id] || []).length === 0 && (
-                  <p className="text-xs text-muted mt-2">No active listings in this building.</p>
-                )}
-              </div>
-            </InfoWindow>
-          )}
-        </GoogleMap>
+        </MapContainer>
       </div>
     </div>
   )
