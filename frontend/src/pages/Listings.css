@@ -1,0 +1,80 @@
+.listings-page {
+  min-height: 80vh;
+}
+
+/* Filters */
+.filters-bar {
+  background: var(--ls-white);
+  border-bottom: 1px solid var(--ls-gray-200);
+  padding: 16px 0;
+  position: sticky;
+  top: 80px;
+  z-index: 50;
+}
+
+.filters-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.filters-days {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.filters-inputs {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-field label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ls-gray-500);
+}
+
+.filter-field .input-field {
+  width: 100px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+/* Results */
+.listings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .filters-inner { flex-direction: column; align-items: flex-start; }
+  .filters-bar { top: 64px; }
+}

@@ -1,0 +1,378 @@
+/* ============================================================
+   LoopShare — Airbnb-inspired Design System
+   ============================================================ */
+
+:root {
+  /* Brand */
+  --ls-primary: #FF385C;
+  --ls-primary-dark: #E31C5F;
+  --ls-primary-light: #FF5A5F;
+  --ls-secondary: #00A699;
+  --ls-accent: #FC642D;
+
+  /* Neutrals */
+  --ls-black: #222222;
+  --ls-gray-900: #333333;
+  --ls-gray-700: #484848;
+  --ls-gray-500: #767676;
+  --ls-gray-300: #B0B0B0;
+  --ls-gray-200: #DDDDDD;
+  --ls-gray-100: #EBEBEB;
+  --ls-gray-50: #F7F7F7;
+  --ls-white: #FFFFFF;
+
+  /* Status */
+  --ls-success: #00A699;
+  --ls-warning: #FC642D;
+  --ls-error: #C13515;
+
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Shadows (Airbnb-style) */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.08);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.12);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.16);
+  --shadow-xl: 0 8px 28px rgba(0,0,0,0.20);
+  --shadow-hover: 0 2px 16px rgba(0,0,0,0.12);
+
+  /* Spacing */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--ls-black);
+  background: var(--ls-white);
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ─── Layout ─── */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.container-wide {
+  max-width: 1760px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ─── Buttons (Airbnb style) ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, var(--ls-primary), #E61E4D, #D70466);
+  color: var(--ls-white);
+}
+.btn-primary:hover {
+  background: linear-gradient(to right, var(--ls-primary-dark), #C81E4E, #BD0455);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--ls-white);
+  color: var(--ls-black);
+  border: 1px solid var(--ls-black);
+}
+.btn-secondary:hover {
+  background: var(--ls-gray-50);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--ls-black);
+  border: 1px solid var(--ls-gray-200);
+}
+.btn-outline:hover {
+  border-color: var(--ls-black);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ls-gray-700);
+  padding: 8px 12px;
+}
+.btn-ghost:hover {
+  background: var(--ls-gray-50);
+}
+
+.btn-sm {
+  padding: 6px 16px;
+  font-size: 13px;
+}
+
+.btn-lg {
+  padding: 14px 32px;
+  font-size: 16px;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Cards (Airbnb style) ─── */
+.card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.card-image {
+  width: 100%;
+  aspect-ratio: 20/19;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Chips / Tags ─── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.chip-day {
+  background: var(--ls-gray-100);
+  color: var(--ls-gray-700);
+}
+
+.chip-active {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.chip-pending {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.chip-confirmed {
+  background: #E0F2F1;
+  color: #00695C;
+}
+
+.chip-cancelled {
+  background: #FFEBEE;
+  color: #C62828;
+}
+
+/* ─── Form Inputs (Airbnb style) ─── */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ls-gray-700);
+}
+
+.input-field {
+  padding: 12px 16px;
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--ls-black);
+}
+
+.input-field::placeholder {
+  color: var(--ls-gray-300);
+}
+
+/* ─── Search Bar (Airbnb pill) ─── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--ls-white);
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--radius-full);
+  padding: 7px 7px 7px 24px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.3s;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.search-bar:hover,
+.search-bar:focus-within {
+  box-shadow: var(--shadow-lg);
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+}
+
+.search-bar .search-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ls-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ─── Grid ─── */
+.grid-listings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* ─── Badges ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ls-gray-50);
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ls-gray-700);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.badge:hover, .badge.active {
+  background: var(--ls-gray-100);
+  border-color: var(--ls-black);
+  color: var(--ls-black);
+}
+
+/* ─── Divider ─── */
+.divider {
+  height: 1px;
+  background: var(--ls-gray-200);
+  margin: 24px 0;
+}
+
+/* ─── Utility ─── */
+.text-muted { color: var(--ls-gray-500); }
+.text-sm { font-size: 14px; }
+.text-xs { font-size: 12px; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.text-center { text-align: center; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.gap-6 { gap: 24px; }
+.mt-2 { margin-top: 8px; }
+.mt-4 { margin-top: 16px; }
+.mt-6 { margin-top: 24px; }
+.mt-8 { margin-top: 32px; }
+.mb-2 { margin-bottom: 8px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-6 { margin-bottom: 24px; }
+.py-4 { padding-top: 16px; padding-bottom: 16px; }
+.py-6 { padding-top: 24px; padding-bottom: 24px; }
+.py-8 { padding-top: 32px; padding-bottom: 32px; }
+.py-12 { padding-top: 48px; padding-bottom: 48px; }
+
+/* ─── Animations ─── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
+  .container-wide { padding: 0 16px; }
+  .grid-listings { grid-template-columns: 1fr; }
+  .hide-mobile { display: none !important; }
+}
