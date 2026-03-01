@@ -341,9 +341,109 @@
   color: var(--ls-gray-500);
 }
 
+/* ── Tier badge ─────────────────────────────────────────────────────────── */
+.tier-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* ── Opportunity row ────────────────────────────────────────────────────── */
+.opportunity-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.opportunity-score {
+  font-size: 0.82rem;
+  color: var(--ls-gray-500);
+}
+
+.opportunity-score strong {
+  color: var(--ls-gray-700);
+  font-weight: 700;
+}
+
+/* ── Analysis grid: radar (left) + dim bars (right) ─────────────────────── */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 16px;
+  background: var(--ls-gray-100);
+  border-radius: 12px;
+}
+
+.radar-wrap {
+  width: 190px;
+  height: 190px;
+}
+
+/* ── Dimension bars ─────────────────────────────────────────────────────── */
+.dim-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.dim-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dim-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dim-bar-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--ls-gray-700);
+}
+
+.dim-bar-value {
+  font-size: 0.72rem;
+  color: var(--ls-gray-500);
+  font-weight: 600;
+}
+
+.dim-bar-track {
+  height: 5px;
+  background: var(--ls-gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dim-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .match-stats { grid-template-columns: 1fr; }
   .match-actions { flex-direction: column; }
   .match-actions .btn-primary,
   .match-actions .btn-secondary { width: 100%; justify-content: center; }
+  .analysis-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .radar-wrap {
+    width: 160px;
+    height: 160px;
+  }
+  .dim-bars { width: 100%; }
 }

@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { agents } from '../services/api'
-import { Building2, Users, DollarSign, MapPin, Briefcase, Loader2 } from 'lucide-react'
+import { Building2, Users, DollarSign, Briefcase, Loader2 } from 'lucide-react'
 import './Onboarding.css'
 
 const DAYS    = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 const SECTORS = ['Software', 'Fintech', 'Healthcare', 'Marketing', 'Legal', 'Design', 'Consulting', 'Other']
-const ZONES   = ['North Loop', 'South Loop', 'West Loop', 'East Loop']
 
 export default function Onboarding() {
   const navigate = useNavigate()
@@ -17,7 +16,6 @@ export default function Onboarding() {
     days:    ['Monday', 'Wednesday'],
     people:  8,
     budget:  2000,
-    zone:    'North Loop',
   })
   const [loading, setLoading]   = useState(false)
   const [error,   setError]     = useState(null)
@@ -140,26 +138,7 @@ export default function Onboarding() {
           </div>
         </div>
 
-        {/* Zone */}
-        <div className="field-group">
-          <label><MapPin size={16} /> Preferred Zone</label>
-          <div className="zone-group">
-            {ZONES.map(z => (
-              <label key={z} className={`zone-option ${form.zone === z ? 'active' : ''}`}>
-                <input
-                  type="radio"
-                  name="zone"
-                  value={z}
-                  checked={form.zone === z}
-                  onChange={() => setForm(f => ({ ...f, zone: z }))}
-                />
-                {z}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {error && <div className="form-error">{error}</div>}
+{error && <div className="form-error">{error}</div>}
 
         <button type="submit" className="btn-primary btn-lg submit-btn" disabled={loading}>
           {loading ? <><Loader2 size={18} className="spin" /> Finding matches...</> : 'Find My Office Space →'}

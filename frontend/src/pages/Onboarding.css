@@ -151,37 +151,6 @@
   color: var(--ls-primary);
 }
 
-/* Zone */
-.zone-group {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.zone-option {
-  padding: 10px 18px;
-  border: 2px solid var(--ls-gray-200);
-  border-radius: 50px;
-  cursor: pointer;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--ls-gray-700);
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.zone-option input[type="radio"] {
-  display: none;
-}
-
-.zone-option:hover,
-.zone-option.active {
-  border-color: var(--ls-primary);
-  color: var(--ls-primary);
-  background: rgba(255, 56, 92, 0.06);
-}
 
 .form-error {
   background: #fff1f0;

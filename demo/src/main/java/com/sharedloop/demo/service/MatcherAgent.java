@@ -36,7 +36,7 @@ public class MatcherAgent {
     }
 
     /**
-     * @param profile map with: company, sector, days (List<String>), people, budget, zone
+     * @param profile map with: company, sector, days (List<String>), people, budget
      * @return list of top-3 match maps
      */
     @SuppressWarnings("unchecked")
@@ -66,24 +66,28 @@ public class MatcherAgent {
             entry.put("price_per_desk_per_day", listing.getPricePerDeskPerDay());
             entry.put("floor_number", listing.getFloorNumber());
             entry.put("description", listing.getDescription());
-            entry.put("match_score", score);
 
-            /* Estimated cost & CO2
-            List<String> startupDays = (List<String>) profile.getOrDefault("days", Collections.emptyList());
-            int daysPerMonth = startupDays.size() * 4;
+            // Estimated monthly cost
+            @SuppressWarnings("unchecked")
+            List<String> profileDays = (List<String>) profile.getOrDefault("days", Collections.emptyList());
+            int daysPerMonth = profileDays.size() * 4;
             int people = toInt(profile.get("people"), 1);
             double monthlyCost = listing.getPricePerDeskPerDay() * people * daysPerMonth;
             entry.put("estimated_monthly_cost", Math.round(monthlyCost));
 
             // EUI enrichment from Chicago API (best effort)
             double eui = fetchEui(listing.getBuilding().getName());
-            entry.put("eui_score", eui);
+            entry.put("eui_score", Math.round(eui * 10.0) / 10.0);
             entry.put("avg_eui", AVG_LOOP_OFFICE_EUI);
             double euiSaving = Math.max(0, AVG_LOOP_OFFICE_EUI - eui);
             // 5000 sqft proxy for shared space, 0.000053 metric tons CO2e per kBtu
             double co2 = euiSaving * 5000 * 0.000053;
             entry.put("co2_reduction_tons_year", Math.round(co2 * 10.0) / 10.0);
-                */
+
+            // EUI bonus: +5 pts for efficient buildings
+            if (eui < AVG_LOOP_OFFICE_EUI) score = Math.min(score + 5, 95);
+            entry.put("match_score", score);
+
             scored.add(entry);
         }
 
@@ -122,20 +126,7 @@ public class MatcherAgent {
         // capacity (20 pts)
         if (listing.getDesksAvailable() != null && listing.getDesksAvailable() >= people) score += 20;
 
-        // zone_match (15 pts)
-        String zone = String.valueOf(profile.getOrDefault("zone", "")).toLowerCase();
-        String neighborhood = listing.getBuilding().getNeighborhood() == null ? "" :
-                listing.getBuilding().getNeighborhood().toLowerCase();
-        if (!zone.isBlank()) {
-            if (zone.contains("north") && neighborhood.contains("north")) score += 15;
-            else if (zone.contains("south") && neighborhood.contains("south")) score += 15;
-            else if (zone.contains("west") && neighborhood.contains("west")) score += 15;
-            else if (zone.contains("east") && neighborhood.contains("east")) score += 15;
-            else if (zone.contains("loop") && neighborhood.contains("loop")) score += 8;
-        }
-
-        // energy_bonus (5 pts) — rewarded when EUI data says building is efficient
-        // (we add this during enrichWithExplanations after fetching EUI)
+        // energy_bonus (5 pts) — applied in match() after EUI is fetched from Chicago API
 
         return Math.min(score, 95);
     }
@@ -188,10 +179,34 @@ public class MatcherAgent {
                 m.put("match_explanation", explMap.getOrDefault(id, "Great match for your team's needs."));
             }
         } catch (Exception ignored) {
-            matches.forEach(m -> m.putIfAbsent("match_explanation", "Strong compatibility with your workspace requirements."));
+            matches.forEach(m -> m.putIfAbsent("match_explanation", buildFallbackExplanation(m)));
         }
 
         return matches;
+    }
+
+    private String buildFallbackExplanation(Map<String, Object> m) {
+        String name         = String.valueOf(m.getOrDefault("building_name", "This building"));
+        String neighborhood = String.valueOf(m.getOrDefault("neighborhood", "the Loop"));
+        int    score        = toInt(m.get("match_score"), 0);
+        String days         = String.valueOf(m.getOrDefault("days_available", "")).replace(",", ", ");
+        Object costObj      = m.get("estimated_monthly_cost");
+        Object euiObj       = m.get("eui_score");
+
+        String costStr = (costObj != null)
+                ? String.format("$%,d/month", ((Number) costObj).longValue())
+                : "within budget";
+        String euiStr  = (euiObj != null)
+                ? String.format("%.1f kBtu/sqft (Loop avg %.0f)", ((Number) euiObj).doubleValue(), AVG_LOOP_OFFICE_EUI)
+                : null;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append(" in ").append(neighborhood)
+          .append(" scores ").append(score).append("/95 for your requirements.");
+        if (!days.isBlank()) sb.append(" Available on ").append(days).append(".");
+        sb.append(" Estimated cost: ").append(costStr).append(".");
+        if (euiStr != null) sb.append(" Site EUI: ").append(euiStr).append(".");
+        return sb.toString();
     }
 
     private int toInt(Object val, int defaultVal) {
