@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +22,7 @@ public class ChicagoApiClient {
     private static final String VIOLATIONS_URL = "https://data.cityofchicago.org/resource/22u3-xenr.json";
     private static final String CTA_URL        = "https://data.cityofchicago.org/resource/r69b-3mnj.json";
     private static final String LICENSES_URL   = "https://data.cityofchicago.org/resource/uupf-x98q.json";
+    private static final String DATASET_BASE   = "https://data.cityofchicago.org/resource/";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -53,6 +57,38 @@ public class ChicagoApiClient {
         return fetchList(url);
     }
 
+    public List<Map<String, Object>> getLicensesByDatasetAndQuery(String datasetId, String query, int limit) {
+        String normalizedDataset = (datasetId == null || datasetId.isBlank()) ? "uupf-x98q" : datasetId;
+        int cappedLimit = Math.max(1, Math.min(limit, 100));
+        String q = encode(query == null ? "" : query);
+        String url = DATASET_BASE + normalizedDataset + ".json?$limit=" + cappedLimit + "&$q=" + q;
+        return fetchList(url);
+    }
+
+    public List<Map<String, Object>> getLicensesByDatasetAndAddressVariants(String datasetId,
+                                                                            List<String> queries,
+                                                                            int perQueryLimit) {
+        if (queries == null || queries.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Map<String, Object>> merged = new ArrayList<>();
+        for (String query : queries) {
+            if (query == null || query.isBlank()) {
+                continue;
+            }
+            List<Map<String, Object>> rows = getLicensesByDatasetAndQuery(datasetId, query, perQueryLimit);
+            if (rows.isEmpty()) {
+                continue;
+            }
+            if (rows.size() == 1 && rows.get(0).containsKey("error")) {
+                continue;
+            }
+            merged.addAll(rows);
+        }
+        return merged;
+    }
+
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> fetchList(String url) {
         try {
@@ -65,6 +101,9 @@ public class ChicagoApiClient {
     }
 
     private String encode(String s) {
-        return s == null ? "" : s.replace(" ", "%20").replace("'", "''");
+        if (s == null) {
+            return "";
+        }
+        return URLEncoder.encode(s, StandardCharsets.UTF_8).replace("+", "%20");
     }
 }
