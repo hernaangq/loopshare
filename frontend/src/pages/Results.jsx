@@ -1,10 +1,10 @@
-import { useLocation, useNavigate, Link } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { agents } from '../services/api'
-import { CheckCircle, ChevronDown, ChevronUp, AlertTriangle, Zap, DollarSign, Leaf, BarChart2 } from 'lucide-react'
+import { agents, dealScout as dealScoutApi } from '../services/api'
+import { AlertTriangle, Zap, DollarSign, Leaf, Mail } from 'lucide-react'
 import './Results.css'
 
 // Fix default Leaflet icon paths (Vite asset issue)
@@ -49,27 +49,68 @@ function ScoreRing({ score }) {
 }
 
 function MatchCard({ match, rank }) {
-  const [expanded, setExpanded]   = useState(false)
-  const [toast, setToast]         = useState(false)
+  const [aiGenerating, setAiGenerating] = useState(false)
 
   const risk   = (match.risk_report && typeof match.risk_report === 'object') ? match.risk_report : {}
-  const out    = (match.outreach    && typeof match.outreach    === 'object') ? match.outreach    : {}
   const corpR  = Number(risk.corporate_risk) || 0
   const startR = Number(risk.startup_risk)   || 0
 
-  function handleApprove() {
-    setToast(true)
-    setTimeout(() => setToast(false), 3500)
+  const mockEmailFromName = (name) => {
+    const normalized = (name || 'contact')
+      .toLowerCase()
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, '.')
+      .replace(/^\.+|\.+$/g, '')
+    return `${normalized || 'contact'}@mock-loopshare.com`
+  }
+
+  const handleAiProposal = async () => {
+    const buildingId = match?.building_id
+    if (!buildingId) {
+      alert('Building data not available for this result.')
+      return
+    }
+
+    setAiGenerating(true)
+    try {
+      const run = await dealScoutApi.run({
+        topN: 1,
+        dryRun: false,
+        benchmarks: [
+          {
+            buildingId,
+            reportingYear: new Date().getFullYear(),
+            source: 'ui-results-ai-proposal',
+          },
+        ],
+      })
+
+      const opportunity = (run.opportunities || []).find(o => o.buildingId === buildingId) || run.opportunities?.[0]
+      if (!opportunity) {
+        alert('AI agent did not return an outreach proposal for this building.')
+        return
+      }
+
+      const buildingName = match?.building_name || 'your building'
+      const fallbackContactName = opportunity.contact?.name || match?.host_company || buildingName
+      const to = opportunity.contact?.email || mockEmailFromName(fallbackContactName)
+      const subject = opportunity.emailSubject || `LoopShare proposal for ${buildingName}`
+      const body = opportunity.emailBody || `Hi,\n\nI have a proposal for ${buildingName}.\n\nBest,\nLoopShare`
+
+      window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+      if (run.runId && opportunity.buildingId) {
+        dealScoutApi.updateStatus(run.runId, opportunity.buildingId, 'SENT').catch(() => {})
+      }
+    } catch (err) {
+      alert('AI proposal failed: ' + err.message)
+    } finally {
+      setAiGenerating(false)
+    }
   }
 
   return (
     <div className={`match-card rank-${rank + 1}`}>
-      {toast && (
-        <div className="toast">
-          <CheckCircle size={18} /> Outreach approved! Email queued for review.
-        </div>
-      )}
-
       <div className="match-card-header">
         <div className="rank-badge" style={{ background: RANK_COLORS[rank] }}>#{rank + 1}</div>
         <div className="match-title">
@@ -126,22 +167,10 @@ function MatchCard({ match, rank }) {
       </div>
 
       <div className="match-actions">
-        <button className="expand-btn" onClick={() => setExpanded(!expanded)}>
-          {expanded ? <><ChevronUp size={15} /> Hide AI Content</> : <><ChevronDown size={15} /> View Email</>}
-        </button>
-        <button className="btn-primary btn-sm" onClick={handleApprove}>
-          <CheckCircle size={15} /> Approve &amp; Send
+        <button className="btn-primary btn-sm" onClick={handleAiProposal} disabled={aiGenerating}>
+          <Mail size={15} /> {aiGenerating ? 'Generating AI draft...' : 'Generate AI email proposal'}
         </button>
       </div>
-
-      {expanded && (
-        <div className="outreach-section">
-          <div className="outreach-block">
-            <h4>📧 Generated Outreach Email</h4>
-            <pre>{typeof out.email === 'string' ? out.email : 'No email generated.'}</pre>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
