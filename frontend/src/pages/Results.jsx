@@ -13,7 +13,7 @@ import {
 } from 'chart.js'
 import { Radar } from 'react-chartjs-2'
 import { agents, dealScout as dealScoutApi } from '../services/api'
-import { AlertTriangle, Zap, DollarSign, Mail, ArrowLeft, Trophy, Target, TrendingUp } from 'lucide-react'
+import { AlertTriangle, Zap, DollarSign, Mail, ArrowLeft } from 'lucide-react'
 import './Results.css'
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip)
@@ -26,29 +26,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 })
 
-const RANK_COLORS = ['#FF385C', '#FC642D', '#00A699']
 const LOOP_CENTER = [41.8827, -87.6327]
 
-const TIER_STYLES = {
-  'Prime Target':  { bg: '#d1fae5', color: '#065f46' },
-  'Strong Match':  { bg: '#dbeafe', color: '#1e40af' },
-  'Potential':     { bg: '#fef3c7', color: '#92400e' },
-  'Review Needed': { bg: '#fee2e2', color: '#991b1b' },
-}
-
-const DIM_COLORS = {
-  Energy:        '#6366f1',
-  Compliance:    '#16a34a',
-  Accessibility: '#0284c7',
-  Space:         '#9333ea',
-  Financial:     '#ea580c',
-}
-
 function makeIcon(rank) {
-  const color = RANK_COLORS[rank] || '#666'
   return L.divIcon({
     className: '',
-    html: `<div style="background:${color};color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.25)">${rank + 1}</div>`,
+    html: `<div style="background:#41B6E6;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.25)">${rank + 1}</div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 16],
   })
@@ -67,25 +50,15 @@ function ScoreRing({ score }) {
   )
 }
 
-function TierBadge({ tier }) {
-  const style = TIER_STYLES[tier] || { bg: '#f3f4f6', color: '#374151' }
-  return (
-    <span className="tier-badge" style={{ background: style.bg, color: style.color }}>
-      {tier || 'Unrated'}
-    </span>
-  )
-}
-
 function DimBar({ label, score }) {
   const pct = Math.max(0, Math.min(100, ((Number(score) || 0) / 20) * 100))
   return (
     <div className="dim-bar">
       <div className="dim-bar-header">
         <span className="dim-bar-label">{label}</span>
-        <span className="dim-bar-value">{Number(score) || 0}/20</span>
       </div>
       <div className="dim-bar-track">
-        <div className="dim-bar-fill" style={{ width: `${pct}%`, background: DIM_COLORS[label] }} />
+        <div className="dim-bar-fill" style={{ width: `${pct}%`, background: 'var(--ls-primary)' }} />
       </div>
     </div>
   )
@@ -103,7 +76,7 @@ function OpportunityRadar({ analysis }) {
         Number(a.space_potential_score) || 0,
         Number(a.financial_score)       || 0,
       ],
-      backgroundColor: 'rgba(65, 182, 230, 0.12)',
+      backgroundColor: 'rgba(65, 182, 230, 0.2)',
       borderColor: '#41B6E6',
       borderWidth: 2,
       pointBackgroundColor: '#41B6E6',
@@ -198,22 +171,12 @@ function MatchCard({ match, rank }) {
 
       {/* Header: rank badge · building name · match score ring */}
       <div className="match-card-header">
-        <div className="rank-badge" style={{ background: RANK_COLORS[rank] }}>#{rank + 1}</div>
+        <div className="rank-badge">#{rank + 1}</div>
         <div className="match-title">
           <h3>{match.building_name || 'Building'}</h3>
           <p className="match-address">{match.building_address} · {match.neighborhood}</p>
         </div>
         <ScoreRing score={match.match_score} />
-      </div>
-
-      {/* Tier badge + opportunity score */}
-      <div className="opportunity-row">
-        <TierBadge tier={analysis.tier} />
-        {analysis.opportunity_score != null && (
-          <span className="opportunity-score">
-            Opportunity score: <strong>{analysis.opportunity_score}/100</strong>
-          </span>
-        )}
       </div>
 
       {/* Radar chart + dimension bars */}
@@ -363,10 +326,10 @@ export default function Results() {
             ))}
           </MapContainer>
           <div className="map-legend">
-            {RANK_COLORS.map((c, i) => (
+            {[1, 2, 3].map(i => (
               <span key={i} className="legend-item">
-                <span className="legend-dot" style={{ background: c }} />
-                #{i + 1} Match
+                <span className="legend-dot" style={{ background: 'var(--ls-primary)' }} />
+                #{i} Match
               </span>
             ))}
           </div>

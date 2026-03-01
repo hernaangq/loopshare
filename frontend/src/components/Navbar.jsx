@@ -1,19 +1,14 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Search, Globe, Menu, User, Building2, Radar, Sparkles } from 'lucide-react'
+import { Globe, Menu, User, Building2, Radar, Sparkles } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { LOOP_ZONES, SEARCH_DAYS, SEARCH_STORAGE_KEY } from '../constants/searchOptions'
 import './Navbar.css'
 
 export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [searchForm, setSearchForm] = useState({
-    neighborhood: 'The Loop',
-    day: '',
-    desks: '',
-  })
+  const [visible, setVisible] = useState(true)
   const profileMenuRef = useRef(null)
   const { isAuthenticated, role, logout } = useAuth()
   const hostYourSpaceTarget = isAuthenticated && role === 'startup'
@@ -28,40 +23,27 @@ export default function Navbar() {
 
   const dashboardPath = role === 'host' ? '/host' : '/startup'
   const dashboardLabel = role === 'host' ? 'Building Owner Dashboard' : 'Space Seeker Dashboard'
-  const hideTopSearch = location.pathname === '/' || location.pathname.startsWith('/host') || location.pathname.startsWith('/taxes')
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        setVisible(true)
+      } else {
+        setVisible(false)
+      }
+      lastScrollY = currentScrollY
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleLogout = () => {
     logout()
     setMenuOpen(false)
     navigate('/login')
   }
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(SEARCH_STORAGE_KEY)
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        setSearchForm({
-          neighborhood: parsed.neighborhood ?? 'The Loop',
-          day: parsed.day || '',
-          desks: parsed.desks || '',
-        })
-      }
-    } catch {
-      localStorage.removeItem(SEARCH_STORAGE_KEY)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (location.pathname === '/listings') {
-      const params = new URLSearchParams(location.search)
-      setSearchForm({
-        neighborhood: params.get('neighborhood') ?? 'The Loop',
-        day: params.get('day') || '',
-        desks: params.get('desks') || '',
-      })
-    }
-  }, [location.pathname, location.search])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -87,7 +69,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="navbar">
+    <header className="navbar" style={{ transform: visible ? 'translateY(0)' : 'translateY(-100%)' }}>
       <div className="navbar-inner container-wide">
         {/* Logo */}
         <Link to="/" className="navbar-logo">
@@ -100,50 +82,6 @@ export default function Navbar() {
             Loop<span className="logo-accent">Share</span>
           </span>
         </Link>
-
-        {/* Center Search (Airbnb Pill) */}
-        {!hideTopSearch && <div className="navbar-search hide-mobile">
-          <form className="search-pill search-pill-form" onSubmit={handleTopSearch}>
-            <select
-              className="search-pill-input search-pill-select"
-              value={searchForm.neighborhood}
-              onChange={(e) => setSearchForm({ ...searchForm, neighborhood: e.target.value })}
-              aria-label="Neighborhood"
-            >
-              {LOOP_ZONES.map((zone) => (
-                <option key={zone.label} value={zone.value}>
-                  {zone.label}
-                </option>
-              ))}
-            </select>
-            <span className="search-pill-divider" />
-            <select
-              className="search-pill-input search-pill-select"
-              value={searchForm.day}
-              onChange={(e) => setSearchForm({ ...searchForm, day: e.target.value })}
-              aria-label="Day"
-            >
-              {SEARCH_DAYS.map((dayOption) => (
-                <option key={dayOption.label} value={dayOption.value}>
-                  {dayOption.label}
-                </option>
-              ))}
-            </select>
-            <span className="search-pill-divider" />
-            <input
-              type="number"
-              min="1"
-              className="search-pill-input"
-              value={searchForm.desks}
-              onChange={(e) => setSearchForm({ ...searchForm, desks: e.target.value })}
-              placeholder="How many desks?"
-              aria-label="Desks"
-            />
-            <button type="submit" className="search-pill-btn" aria-label="Search listings">
-              <Search size={14} />
-            </button>
-          </form>
-        </div>}
 
         {/* Right Nav */}
         <nav className="navbar-right">
