@@ -7,6 +7,9 @@ import ListingDetail from './pages/ListingDetail'
 import MapExplore from './pages/MapExplore'
 import HostDashboard from './pages/HostDashboard'
 import StartupDashboard from './pages/StartupDashboard'
+import Onboarding from './pages/Onboarding'
+import Results from './pages/Results'
+import BuildingIntel from './pages/BuildingIntel'
 
 export default function App() {
   return (
@@ -20,6 +23,9 @@ export default function App() {
           <Route path="/map" element={<MapExplore />} />
           <Route path="/host" element={<HostDashboard />} />
           <Route path="/startup" element={<StartupDashboard />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/results" element={<Results />} />
+          <Route path="/intel/:buildingId" element={<BuildingIntel />} />
         </Routes>
       </main>
       <Footer />
