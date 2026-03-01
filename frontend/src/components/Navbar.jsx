@@ -76,6 +76,9 @@ export default function Navbar() {
                 <Link to="/startup" className="dropdown-item font-semibold">
                   Startup Dashboard
                 </Link>
+                <Link to="/taxes" className="dropdown-item font-semibold">
+                  Tax Estimator
+                </Link>
                 <div className="dropdown-divider" />
                 <Link to="/listings" className="dropdown-item">
                   Browse Listings
