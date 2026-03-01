@@ -1,0 +1,252 @@
+.intel-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--ls-gray-300);
+  border-radius: 50px;
+  padding: 8px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--ls-gray-700);
+  margin-bottom: 28px;
+  transition: all 0.15s;
+}
+
+.back-btn:hover {
+  border-color: var(--ls-primary);
+  color: var(--ls-primary);
+}
+
+.intel-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.intel-icon { color: var(--ls-primary); }
+
+.intel-hero h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.intel-address {
+  color: var(--ls-gray-500);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* KPI strip */
+.intel-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.intel-kpi {
+  background: #fff;
+  border: 1px solid var(--ls-gray-200);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.kpi-icon { flex-shrink: 0; margin-top: 2px; font-size: 1.1rem; }
+.kpi-icon.eui  { color: #6366f1; }
+.kpi-icon.viol { color: #f59e0b; }
+
+.kpi-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--ls-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.kpi-value {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.kpi-unit {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ls-gray-300);
+}
+
+/* Cards */
+.intel-card {
+  background: #fff;
+  border: 1px solid var(--ls-gray-200);
+  border-radius: 18px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.intel-card h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* EUI Chart */
+.chart-container {
+  height: 280px;
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.chart-note {
+  font-size: 0.85rem;
+  color: var(--ls-gray-500);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Risk bars */
+.risk-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.risk-bar-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: 130px;
+  flex-shrink: 0;
+}
+
+.risk-bar-track {
+  flex: 1;
+  height: 10px;
+  background: var(--ls-gray-100);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.risk-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.6s ease;
+}
+
+.risk-bar-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  width: 56px;
+  text-align: right;
+}
+
+.recommendation {
+  margin: 16px 0 0;
+  padding: 14px;
+  background: rgba(99,102,241,0.05);
+  border-left: 3px solid #6366f1;
+  border-radius: 0 10px 10px 0;
+  font-size: 0.88rem;
+  color: var(--ls-gray-700);
+  line-height: 1.6;
+}
+
+/* CO2 Calculator */
+.co2-card { background: linear-gradient(135deg, #f0fdf4 0%, #fff 60%); }
+
+.leaf-icon { color: #10b981; }
+
+.co2-desc {
+  color: var(--ls-gray-500);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.co2-slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.co2-slider-row label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.co2-slider-row input[type="range"] {
+  accent-color: #10b981;
+  width: 100%;
+}
+
+.co2-result {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.co2-number {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #065f46;
+  line-height: 1;
+}
+
+.co2-label {
+  font-size: 1rem;
+  color: #065f46;
+  font-weight: 600;
+}
+
+.co2-formula {
+  font-size: 0.78rem;
+  color: var(--ls-gray-300);
+  margin: 0;
+}
+
+/* Loading / error */
+.intel-loading,
+.intel-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  text-align: center;
+  color: var(--ls-gray-500);
+}
+
+.spin-large {
+  font-size: 3rem;
+  animation: spin 1.2s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .intel-kpis { grid-template-columns: repeat(2, 1fr); }
+}

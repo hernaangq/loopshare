@@ -50,6 +50,16 @@ export const listings = {
   delete: (id) => request(`/listings/${id}`, { method: 'DELETE' }),
 }
 
+// ─── AI Agents ───
+export const agents = {
+  analyze:     (body) => request('/agents/analyze',     { method: 'POST', body: JSON.stringify(body) }),
+  match:       (body) => request('/agents/match',       { method: 'POST', body: JSON.stringify(body) }),
+  risk:        (body) => request('/agents/risk',        { method: 'POST', body: JSON.stringify(body) }),
+  outreach:    (body) => request('/agents/outreach',    { method: 'POST', body: JSON.stringify(body) }),
+  orchestrate: (body) => request('/agents/orchestrate', { method: 'POST', body: JSON.stringify(body) }),
+  demo:        ()     => request('/demo'),
+}
+
 // ─── Bookings ───
 export const bookings = {
   getAll: () => request('/bookings'),

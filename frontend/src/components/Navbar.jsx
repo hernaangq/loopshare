@@ -138,6 +138,18 @@ export default function Navbar() {
 
         {/* Right Nav */}
         <nav className="navbar-right">
+          <Link
+            to="/onboarding"
+            className={`navbar-link navbar-ai-btn ${location.pathname === '/onboarding' || location.pathname === '/results' ? 'active' : ''}`}
+          >
+            ✦ AI Match
+          </Link>
+          <Link
+            to="/host"
+            className={`navbar-link ${location.pathname === '/host' ? 'active' : ''}`}
+          >
+            Host your space
+          </Link>
           <button className="navbar-globe hide-mobile">
             <Globe size={18} />
           </button>

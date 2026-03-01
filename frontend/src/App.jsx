@@ -12,6 +12,10 @@ import Login from './pages/Login'
 import SignIn from './pages/SignIn'
 import EditProfile from './pages/EditProfile'
 import ProtectedRoute from './components/ProtectedRoute'
+import Onboarding from './pages/Onboarding'
+import Results from './pages/Results'
+import BuildingIntel from './pages/BuildingIntel'
+import LoopMonitor from './pages/LoopMonitor'
 
 export default function App() {
   return (
@@ -57,6 +61,12 @@ export default function App() {
               </ProtectedRoute>
             )}
           />
+          <Route path="/host" element={<HostDashboard />} />
+          <Route path="/startup" element={<StartupDashboard />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/results" element={<Results />} />
+          <Route path="/intel/:buildingId" element={<BuildingIntel />} />
+          <Route path="/monitor" element={<LoopMonitor />} />
         </Routes>
       </main>
       <Footer />

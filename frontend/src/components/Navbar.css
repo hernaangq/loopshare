@@ -232,3 +232,39 @@
   .navbar-logo-text { font-size: 18px; }
   .loop-mark { width: 34px; height: 34px; }
 }
+
+/* AI Match button */
+.navbar-ai-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff !important;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.navbar-ai-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  color: #fff !important;
+}
+
+/* Live Monitor button */
+.navbar-monitor-btn {
+  background: #161b22;
+  color: #3fb950 !important;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid #238636;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.navbar-monitor-btn:hover {
+  background: #1a2a1f;
+  transform: translateY(-1px);
+  color: #3fb950 !important;
+}
