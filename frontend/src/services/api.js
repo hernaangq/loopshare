@@ -71,3 +71,14 @@ export const bookings = {
   updateStatus: (id, status) => request(`/bookings/${id}/status?status=${status}`, { method: 'PATCH' }),
   delete: (id) => request(`/bookings/${id}`, { method: 'DELETE' }),
 }
+
+// ─── Deal Scout ───
+export const dealScout = {
+  run: (data) => request('/deal-scout/runs', { method: 'POST', body: JSON.stringify(data || {}) }),
+  getRuns: () => request('/deal-scout/runs'),
+  getRun: (runId) => request(`/deal-scout/runs/${runId}`),
+  updateStatus: (runId, buildingId, status) =>
+    request(`/deal-scout/runs/${runId}/opportunities/${buildingId}/status?status=${encodeURIComponent(status)}`, {
+      method: 'PATCH',
+    }),
+}

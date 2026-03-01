@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { MapPin, Star, Users } from 'lucide-react'
 import DayChips from './DayChips'
+import { getBuildingImage } from '../utils/buildingImages'
 import './ListingCard.css'
 
 export default function ListingCard({ listing }) {
@@ -11,7 +12,7 @@ export default function ListingCard({ listing }) {
     <Link to={`/listings/${listing.id}`} className="listing-card card fade-in">
       <div className="listing-card-img-wrap">
         <img
-          src={building.imageUrl || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600'}
+          src={getBuildingImage(building)}
           alt={building.name}
           className="card-image"
         />
