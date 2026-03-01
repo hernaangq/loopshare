@@ -36,7 +36,7 @@ public class MatcherAgent {
     }
 
     /**
-     * @param profile map with: company, sector, days (List<String>), people, budget, zone
+     * @param profile map with: company, sector, days (List<String>), people, budget
      * @return list of top-3 match maps
      */
     @SuppressWarnings("unchecked")
@@ -121,18 +121,6 @@ public class MatcherAgent {
 
         // capacity (20 pts)
         if (listing.getDesksAvailable() != null && listing.getDesksAvailable() >= people) score += 20;
-
-        // zone_match (15 pts)
-        String zone = String.valueOf(profile.getOrDefault("zone", "")).toLowerCase();
-        String neighborhood = listing.getBuilding().getNeighborhood() == null ? "" :
-                listing.getBuilding().getNeighborhood().toLowerCase();
-        if (!zone.isBlank()) {
-            if (zone.contains("north") && neighborhood.contains("north")) score += 15;
-            else if (zone.contains("south") && neighborhood.contains("south")) score += 15;
-            else if (zone.contains("west") && neighborhood.contains("west")) score += 15;
-            else if (zone.contains("east") && neighborhood.contains("east")) score += 15;
-            else if (zone.contains("loop") && neighborhood.contains("loop")) score += 8;
-        }
 
         // energy_bonus (5 pts) — rewarded when EUI data says building is efficient
         // (we add this during enrichWithExplanations after fetching EUI)
