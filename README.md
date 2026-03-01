@@ -1,8 +1,8 @@
 
 <p align="center">
-  <a href="https://www.demonhacks.com/"><img src="demonhacks.png" alt="DemonHacks" width="90"/></a>
+  <a href="https://www.demonhacks.com/"><img src="demonhacks.png" alt="DemonHacks" width="190"/></a>
   &nbsp;&nbsp;&nbsp;
-  <a href="https://www.demonhacks.com/"><img src="https://www.demonhacks.com/Microsoft_logo.svg.png" alt="Microsoft" width="70"/></a>
+  <a href="https://www.demonhacks.com/"><img src="https://www.demonhacks.com/Microsoft_logo.svg.png" alt="Microsoft" width="140"/></a>
 </p>
 
 <p align="center">
@@ -48,28 +48,7 @@ Small teams looking for flexible, affordable desk space. They can:
 
 ## Architecture
 
-```
-┌────────────────────────────────────────────────────────────────┐
-│               React Frontend  (Vite :3000)                     │
-│  Home · Listings · Map · Onboarding · Results · Dashboards     │
-└────────────────────────┬───────────────────────────────────────┘
-                         │
-          ┌──────────────┴──────────────┐
-          ▼                             ▼
-┌─────────────────────┐     ┌──────────────────────────┐
-│  Spring Boot :8003  │     │  Flask ML API :5000      │
-│                     │     │                          │
-│  REST API + JPA     │     │  Occupancy predictions   │
-│  4 AI Agents        │◄───►│  Ghost building detector │
-│  Ollama LLM client  │     │  Gradient Boosting model │
-│  Chicago Data APIs  │     │  (scikit-learn, R²=0.94) │
-│  H2 in-memory DB    │     │                          │
-└──────────┬──────────┘     └──────────────────────────┘
-           │
-           ▼
-  Chicago Open Data Portal
-  (Energy · Violations · CTA · Licenses)
-```
+![alt text](arquitecture.jpeg)
 
 The platform is built from **four modules**:
 
