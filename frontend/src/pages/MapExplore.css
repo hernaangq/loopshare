@@ -84,9 +84,7 @@
 }
 
 /* Map */
-.map-container {
-  flex: 1;
-}
+/* (main .map-container rule is at bottom with position: relative) */
 
 /* Custom Marker Pins */
 .custom-div-marker {
@@ -186,8 +184,265 @@
   font-weight: 500;
 }
 
+/* ─── Mode Toggle ─────────────────────────── */
+.map-mode-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  background: var(--ls-gray-100, #f1f1f1);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: var(--ls-gray-500, #717171);
+  transition: all 0.2s;
+}
+
+.mode-btn.active {
+  background: var(--ls-white, #fff);
+  color: var(--ls-gray-900, #222);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mode-btn-ai.active {
+  color: #7c3aed;
+}
+
+/* ─── ML Stats Bar ────────────────────────── */
+.ml-stats-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.ml-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.ml-stat.ghost {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+.ml-stat.risk {
+  color: #f59e0b;
+  background: #fffbeb;
+}
+
+.ml-stat.healthy {
+  color: #22c55e;
+  background: #f0fdf4;
+}
+
+.ml-error {
+  padding: 16px 20px;
+  color: #ef4444;
+  font-size: 13px;
+  background: #fef2f2;
+  border-bottom: 1px solid #fecaca;
+}
+
+/* ─── Occupancy Sidebar Badge ─────────────── */
+.occ-sidebar-badge {
+  width: 52px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ─── Occupancy Map Markers ───────────────── */
+.occ-marker {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  transition: transform 0.15s;
+}
+
+.occ-marker:hover {
+  transform: scale(1.15);
+}
+
+.occ-marker.occ-ghost {
+  background: #ef4444;
+}
+
+.occ-marker.occ-risk {
+  background: #f59e0b;
+}
+
+.occ-marker.occ-healthy {
+  background: #22c55e;
+}
+
+.occ-label {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Occupancy Popup ─────────────────────── */
+.occ-popup-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.occ-status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.occ-bar-wrapper {
+  margin: 10px 0 8px;
+}
+
+.occ-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: var(--ls-gray-200, #e5e5e5);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.occ-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.occ-bar-label {
+  font-size: 11px;
+  color: var(--ls-gray-500, #717171);
+  margin-top: 3px;
+  display: block;
+}
+
+.occ-popup-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--ls-gray-200, #ebebeb);
+}
+
+.occ-detail-row {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+}
+
+.occ-detail-row span {
+  color: var(--ls-gray-500, #717171);
+  font-size: 11px;
+}
+
+.occ-detail-row strong {
+  color: var(--ls-gray-900, #222);
+  font-size: 13px;
+}
+
+/* ─── Occupancy Legend ────────────────────── */
+.occ-legend {
+  position: absolute;
+  bottom: 24px;
+  right: 16px;
+  background: rgba(15, 15, 20, 0.88);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 14px 18px;
+  z-index: 1000;
+  color: #fff;
+  min-width: 170px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.occ-legend h5 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.occ-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.occ-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.occ-legend-summary {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.occ-legend-summary strong {
+  color: #fff;
+}
+
+/* ─── Map Container relative for legend positioning ── */
+.map-container {
+  flex: 1;
+  position: relative;
+}
+
 @media (max-width: 768px) {
   .map-page { flex-direction: column; height: auto; }
   .map-sidebar { width: 100%; max-height: 300px; border-right: none; border-bottom: 1px solid var(--ls-gray-200); }
   .map-container { height: 400px; }
+  .occ-legend { bottom: 12px; right: 8px; }
 }
