@@ -1,8 +1,49 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { agents } from '../services/api'
 import { Building2, Users, DollarSign, Briefcase, Loader2 } from 'lucide-react'
 import './Onboarding.css'
+
+const AGENT_LABELS = [
+  'Scanning Loop buildings...',
+  'Analyzing energy data...',
+  'Calculating risk scores...',
+  'Finding your matches...',
+]
+
+function AgentLoader() {
+  const [idx, setIdx]       = useState(0)
+  const [fading, setFading] = useState(false)
+
+  useEffect(() => {
+    const cycle = setInterval(() => {
+      setFading(true)
+      setTimeout(() => {
+        setIdx(i => (i + 1) % AGENT_LABELS.length)
+        setFading(false)
+      }, 400)
+    }, 2000)
+    return () => clearInterval(cycle)
+  }, [])
+
+  return (
+    <div className="agent-fullscreen">
+      <div className="loader-center">
+        <div className="loader-orbit">
+          <div className="loader-dot" />
+          <div className="loader-dot" />
+          <div className="loader-dot" />
+        </div>
+        <p className="loader-label" style={{ opacity: fading ? 0 : 1 }}>
+          {AGENT_LABELS[idx]}
+        </p>
+      </div>
+      <div className="loader-bar-track">
+        <div className="loader-bar-fill" />
+      </div>
+    </div>
+  )
+}
 
 const DAYS    = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 const SECTORS = ['Software', 'Fintech', 'Healthcare', 'Marketing', 'Legal', 'Design', 'Consulting', 'Other']
@@ -48,21 +89,7 @@ export default function Onboarding() {
     }
   }
 
-  if (step === 2) {
-    return (
-      <div className="onboarding-loading">
-        <Loader2 className="spin" size={48} />
-        <h2>Finding your perfect Loop office...</h2>
-        <p>Our AI agents are analyzing buildings, assessing risk, and drafting your outreach. This takes about 60–90 seconds.</p>
-        <div className="agent-steps">
-          <div className="agent-step active">🔍 Matching buildings to your needs</div>
-          <div className="agent-step">📊 Analyzing energy &amp; occupancy data</div>
-          <div className="agent-step">🛡️ Running risk assessment</div>
-          <div className="agent-step">✉️ Drafting outreach &amp; lease</div>
-        </div>
-      </div>
-    )
-  }
+  if (step === 2) return <AgentLoader />
 
   return (
     <div className="onboarding-page">
