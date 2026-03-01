@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
+  height: 92px;
 }
 
 /* Logo */
@@ -56,9 +56,11 @@
 
 /* Search Pill */
 .navbar-search {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   justify-content: center;
+  overflow: hidden;
 }
 
 .search-pill {
@@ -84,9 +86,10 @@
   background: transparent;
   font-size: 14px;
   font-weight: 600;
-  min-width: 130px;
+  min-width: 80px;
+  width: auto;
   color: var(--ls-black);
-  padding: 0 16px;
+  padding: 0 14px;
 }
 
 .search-pill-select {
@@ -99,7 +102,7 @@
 }
 
 .search-pill-section {
-  padding: 0 16px;
+  padding: 0 12px;
 }
 
 .search-pill-divider {
@@ -128,8 +131,9 @@
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
+  margin-left: 16px;
 }
 
 .navbar-link {
@@ -228,7 +232,7 @@
 }
 
 @media (max-width: 768px) {
-  .navbar-inner { height: 64px; }
+  .navbar-inner { height: 72px; }
   .navbar-logo-text { font-size: 18px; }
   .loop-mark { width: 34px; height: 34px; }
   .loop-mark-ring { width: 34px; height: 34px; }
@@ -238,7 +242,7 @@
 .navbar-ai-btn {
   background: linear-gradient(135deg, #7c3aed, #a78bfa);
   color: #fff !important;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
@@ -258,7 +262,7 @@
 .navbar-host-btn {
   background: var(--ls-black);
   color: #fff !important;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
@@ -278,7 +282,7 @@
 .navbar-find-host-btn {
   background: linear-gradient(135deg, #0b5cab, #41b6e6);
   color: #fff !important;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
