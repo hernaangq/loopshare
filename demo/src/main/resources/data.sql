@@ -2,31 +2,40 @@
 -- LoopShare Mock Data — Chicago Loop Marketplace
 -- ============================================================
 
--- ─── BUILDINGS (12 real Chicago Loop addresses) ─────────────
+-- ─── BUILDINGS (21 from Chicago Energy Benchmarking dataset) ─
 INSERT INTO buildings (name, address, neighborhood, floors, total_desks, amenities, latitude, longitude, image_url) VALUES
-('Willis Tower',              '233 S Wacker Dr, Chicago, IL 60606',       'The Loop',    110, 500, 'WiFi,Coffee,Parking,Conference Rooms,Gym,Rooftop Lounge',           41.8789, -87.6359, 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800'),
-('Aon Center',                '200 E Randolph St, Chicago, IL 60601',     'The Loop',     83, 350, 'WiFi,Coffee,Conference Rooms,Cafeteria,Mail Service',                41.8853, -87.6217, 'https://images.unsplash.com/photo-1494522855154-9297ac14b55f?w=800'),
-('Chase Tower',               '21 S Clark St, Chicago, IL 60603',         'The Loop',     60, 280, 'WiFi,Coffee,Parking,Conference Rooms,Security Desk',                 41.8810, -87.6309, 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800'),
-('One Prudential Plaza',      '130 E Randolph St, Chicago, IL 60601',     'The Loop',     41, 200, 'WiFi,Coffee,Conference Rooms,Cafeteria',                             41.8847, -87.6239, 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800'),
-('The Rookery',               '209 S LaSalle St, Chicago, IL 60604',      'The Loop',     12,  60, 'WiFi,Coffee,Historic Architecture,Conference Rooms',                 41.8794, -87.6323, 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800'),
-('Merchandise Mart',          '222 W Merchandise Mart Plaza, Chicago, IL 60654', 'River North', 25, 400, 'WiFi,Coffee,Parking,Conference Rooms,Cafeteria,Event Space',   41.8885, -87.6354, 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800'),
-('311 South Wacker',          '311 S Wacker Dr, Chicago, IL 60606',       'The Loop',     65, 300, 'WiFi,Coffee,Parking,Conference Rooms,Gym',                           41.8776, -87.6363, 'https://images.unsplash.com/photo-1517502884422-41eaead166d4?w=800'),
-('One Illinois Center',       '111 E Wacker Dr, Chicago, IL 60601',       'The Loop',     31, 150, 'WiFi,Coffee,Conference Rooms,Lake View',                             41.8870, -87.6240, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'),
-('20 N Wacker',               '20 N Wacker Dr, Chicago, IL 60606',        'West Loop',    30, 180, 'WiFi,Coffee,Conference Rooms,Phone Booths,Bike Storage',             41.8825, -87.6374, 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800'),
-('30 N LaSalle',              '30 N LaSalle St, Chicago, IL 60602',       'The Loop',     44, 250, 'WiFi,Coffee,Conference Rooms,Parking,Security',                      41.8822, -87.6325, 'https://images.unsplash.com/photo-1462826303086-329426d1aef5?w=800'),
-('125 S Clark',               '125 S Clark St, Chicago, IL 60603',        'The Loop',     20, 100, 'WiFi,Coffee,Conference Rooms',                                       41.8798, -87.6311, 'https://images.unsplash.com/photo-1497215842964-222b430dc094?w=800'),
-('Old Post Office',           '433 W Van Buren St, Chicago, IL 60607',    'West Loop',    11, 450, 'WiFi,Coffee,Parking,Conference Rooms,Rooftop Deck,Gym,Food Hall',   41.8762, -87.6389, 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800');
+('8 S. Michigan LLC',                        '8 S. Michigan Ave, Chicago, IL 60603',       'The Loop',   40, 180,  'WiFi,Coffee,Conference Rooms,Historic Architecture',                       41.8818,   -87.6244, 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800'),
+('122 Property LLC',                         '122 S. Michigan Ave, Chicago, IL 60604',     'The Loop',   45, 500,  'WiFi,Coffee,Conference Rooms,Cafeteria,Historic Architecture',              41.8804,   -87.6243, 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800'),
+('55 West Wacker Drive',                     '55 W Wacker Dr, Chicago, IL 60601',          'The Loop',   41, 275,  'WiFi,Coffee,Conference Rooms,River View,Gym',                               41.8826,   -87.6296, 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800'),
+('Michigan - 180 Property LLC',              '180 N Michigan Ave, Chicago, IL 60601',      'The Loop',   28, 230,  'WiFi,Coffee,Conference Rooms,Lake View',                                    41.8869,   -87.6244, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'),
+('One North Franklin (PNC Center)',          '1 N Franklin St, Chicago, IL 60606',         'The Loop',   48, 700,  'WiFi,Coffee,Conference Rooms,Gym,Security Desk',                            41.8820,   -87.6352, 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800'),
+('135 S LaSalle Property LLC',               '135 S LaSalle St, Chicago, IL 60603',        'The Loop',   45, 300,  'WiFi,Coffee,Conference Rooms,Historic Architecture,Security',               41.8786,   -87.6321, 'https://images.unsplash.com/photo-1462826303086-329426d1aef5?w=800'),
+('11 East Adams LLC',                        '11 E Adams St, Chicago, IL 60603',           'The Loop',   30, 160,  'WiFi,Coffee,Conference Rooms',                                              41.8793,   -87.6275, 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800'),
+('191 North Wacker',                         '191 N Wacker Dr, Chicago, IL 60606',         'West Loop',  37, 775,  'WiFi,Coffee,Conference Rooms,Gym,River View',                               41.8877,   -87.6365, 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800'),
+('77 West Wacker Drive',                     '77 W Wacker Dr, Chicago, IL 60601',          'The Loop',   50, 600,  'WiFi,Coffee,Conference Rooms,River View,Gym',                               41.8833,   -87.6362, 'https://images.unsplash.com/photo-1517502884422-41eaead166d4?w=800'),
+('One East Wacker',                          '1 E Wacker Dr, Chicago, IL 60601',           'The Loop',   40, 800,  'WiFi,Coffee,Conference Rooms,Lake View',                                    41.8878,   -87.6258, 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800'),
+('105 W Madison',                            '105 W Madison St, Chicago, IL 60602',        'The Loop',   25, 140,  'WiFi,Coffee,Conference Rooms',                                              41.8818,   -87.6295, 'https://images.unsplash.com/photo-1494522855154-9297ac14b55f?w=800'),
+('101 North Wacker',                         '101 N Wacker Dr, Chicago, IL 60606',         'West Loop',  50, 670,  'WiFi,Coffee,Conference Rooms,Gym,River View',                               41.8861,   -87.6371, 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800'),
+('The National (125 S. Clark Street)',       '125 S Clark St, Chicago, IL 60603',          'The Loop',   21, 580,  'WiFi,Coffee,Conference Rooms,Historic Architecture',                       41.8796,   -87.6311, 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800'),
+('The Monadnock Building',                   '53 W Jackson Blvd, Chicago, IL 60604',       'The Loop',   16, 495,  'WiFi,Coffee,Conference Rooms,Historic Architecture',                       41.8782,   -87.6304, 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800'),
+('The Garland Building Office Condominium',  '111 N Wabash Ave, Chicago, IL 60602',        'The Loop',   25, 260,  'WiFi,Coffee,Conference Rooms',                                              41.8833,   -87.6264, 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800'),
+('65 E Wacker Place',                        '65 E Wacker Pl, Chicago, IL 60601',          'The Loop',   24, 250,  'WiFi,Coffee,Conference Rooms,Lake View',                                    41.8878,   -87.6248, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'),
+('55 West Monroe',                           '55 W Monroe St, Chicago, IL 60603',          'The Loop',   44, 895,  'WiFi,Coffee,Conference Rooms,Gym',                                          41.8806,   -87.6296, 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800'),
+('10 South LaSalle Street',                  '10 S LaSalle St, Chicago, IL 60603',         'The Loop',   36, 870,  'WiFi,Coffee,Conference Rooms,Security Desk',                                41.8808,   -87.6321, 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800'),
+('209 West Jackson',                         '209 W Jackson Blvd, Chicago, IL 60606',      'The Loop',   20, 165,  'WiFi,Coffee,Conference Rooms',                                              41.87695,  -87.634048, 'https://images.unsplash.com/photo-1497215842964-222b430dc094?w=800'),
+('111 West Washington',                      '111 W Washington St, Chicago, IL 60602',     'The Loop',   35, 600,  'WiFi,Coffee,Conference Rooms,Gym,Security Desk',                            41.884596, -87.628795, 'https://images.unsplash.com/photo-1462826303086-329426d1aef5?w=800'),
+('35 East Wacker Drive',                     '35 E Wacker Dr, Chicago, IL 60601',          'The Loop',   40, 620,  'WiFi,Coffee,Conference Rooms,Lake View,Historic Architecture',              41.880845, -87.628591, 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800');
 
 -- ─── HOSTS (8 corporations with empty desks) ────────────────
 INSERT INTO hosts (company_name, industry, contact_name, contact_email, contact_phone, building_id, employee_count, description) VALUES
-('Kirkland & Ellis LLP',       'Legal',           'Margaret Chen',     'mchen@kirkland.example.com',     '312-555-0101', 1,  1800, 'Global law firm with excess capacity on non-court days.'),
-('Northern Trust Corp',        'Financial Services','David Okoro',      'dokoro@ntrust.example.com',      '312-555-0102', 2,  5000, 'Asset management firm with 30% vacancy post-hybrid shift.'),
-('Morningstar Inc',            'Financial Data',   'Lisa Patel',        'lpatel@morningstar.example.com', '312-555-0103', 3,  4500, 'Investment research firm; employees work from home Mon/Fri.'),
-('Kraft Heinz Co',             'Food & Beverage',  'James Williams',    'jwilliams@kraftheinz.example.com','312-555-0104', 4,  2000, 'CPG giant with underused downtown HQ space.'),
-('TransUnion',                 'Data & Analytics', 'Sarah Johnson',     'sjohnson@transunion.example.com','312-555-0105', 7,  3000, 'Credit bureau with flexible seating policy.'),
-('Holland & Knight LLP',       'Legal',           'Robert Martinez',   'rmartinez@hklaw.example.com',    '312-555-0106', 10, 1200, 'National law firm offering desks Tu-Th.'),
-('Hyatt Hotels Corp',          'Hospitality',     'Angela Brooks',     'abrooks@hyatt.example.com',      '312-555-0107', 6,  3500, 'Hotel HQ with 2 open floors after restructuring.'),
-('Conagra Brands',             'Food & Beverage', 'Michael Torres',    'mtorres@conagra.example.com',    '312-555-0108', 12, 1500, 'CPG company in the Old Post Office with significant vacancy.');
+('Kirkland & Ellis LLP',       'Legal',           'Margaret Chen',     'mchen@kirkland.example.com',     '312-555-0101', 5,  1800, 'Global law firm with excess capacity on non-court days.'),
+('Northern Trust Corp',        'Financial Services','David Okoro',      'dokoro@ntrust.example.com',      '312-555-0102', 12, 5000, 'Asset management firm with 30% vacancy post-hybrid shift.'),
+('Morningstar Inc',            'Financial Data',   'Lisa Patel',        'lpatel@morningstar.example.com', '312-555-0103', 9,  4500, 'Investment research firm; employees work from home Mon/Fri.'),
+('Kraft Heinz Co',             'Food & Beverage',  'James Williams',    'jwilliams@kraftheinz.example.com','312-555-0104', 17, 2000, 'CPG giant with underused downtown HQ space.'),
+('TransUnion',                 'Data & Analytics', 'Sarah Johnson',     'sjohnson@transunion.example.com','312-555-0105', 8,  3000, 'Credit bureau with flexible seating policy.'),
+('Holland & Knight LLP',       'Legal',           'Robert Martinez',   'rmartinez@hklaw.example.com',    '312-555-0106', 18, 1200, 'National law firm offering desks Tu-Th.'),
+('Hyatt Hotels Corp',          'Hospitality',     'Angela Brooks',     'abrooks@hyatt.example.com',      '312-555-0107', 10, 3500, 'Hotel HQ with 2 open floors after restructuring.'),
+('Conagra Brands',             'Food & Beverage', 'Michael Torres',    'mtorres@conagra.example.com',    '312-555-0108', 2,  1500, 'CPG company with significant vacancy in Michigan Ave offices.');
 
 -- ─── STARTUPS (10 Chicago startups needing space) ───────────
 INSERT INTO startups (company_name, industry, contact_name, contact_email, contact_phone, team_size, days_needed, desks_needed, description) VALUES
@@ -43,16 +52,16 @@ INSERT INTO startups (company_name, industry, contact_name, contact_email, conta
 
 -- ─── LISTINGS (hosts offering desks) ────────────────────────
 INSERT INTO listings (host_id, building_id, days_available, desks_available, price_per_desk_per_day, floor_number, active, description) VALUES
-(1, 1,  'TUESDAY,WEDNESDAY,THURSDAY',               40,  75.00, 55, true,  'Premium desks in Willis Tower with skyline views. Standing desks available.'),
-(1, 1,  'MONDAY,FRIDAY',                             25,  55.00, 50, true,  'Willis Tower lower floor — quieter, good for focused work.'),
-(2, 2,  'MONDAY,FRIDAY',                             50,  60.00, 35, true,  'Open plan section at Aon Center. Lake Michigan views.'),
-(3, 3,  'MONDAY,FRIDAY',                             30,  50.00, 22, true,  'Morningstar empty desks on remote days. Full amenities.'),
-(4, 4,  'MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY',  20,  45.00, 15, true,  'Kraft Heinz spare floor — all week availability.'),
-(5, 7,  'MONDAY,WEDNESDAY,FRIDAY',                   35,  55.00, 30, true,  'TransUnion flex seats with dual monitors.'),
-(6, 10, 'TUESDAY,WEDNESDAY,THURSDAY',                18,  65.00, 20, true,  'Holland & Knight private office pods, mid-week only.'),
-(7, 6,  'MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY',  60,  40.00,  8, true,  'Hyatt HQ open floor — great for large startup teams.'),
-(7, 6,  'WEDNESDAY,THURSDAY,FRIDAY',                 30,  35.00,  9, true,  'Hyatt second available floor. Budget-friendly.'),
-(8, 12, 'TUESDAY,WEDNESDAY,THURSDAY,FRIDAY',         45,  50.00,  5, true,  'Old Post Office — modern space with rooftop access.');
+(1, 5,  'TUESDAY,WEDNESDAY,THURSDAY',               40,  75.00, 30, true,  'Premium desks at One North Franklin with skyline views. Standing desks available.'),
+(1, 5,  'MONDAY,FRIDAY',                             25,  55.00, 25, true,  'One North Franklin lower floor — quieter, good for focused work.'),
+(2, 12, 'MONDAY,FRIDAY',                             50,  60.00, 35, true,  'Open plan section at 101 North Wacker. River views.'),
+(3, 9,  'MONDAY,FRIDAY',                             30,  50.00, 22, true,  'Morningstar empty desks on remote days at 77 West Wacker. Full amenities.'),
+(4, 17, 'MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY',  20,  45.00, 15, true,  'Kraft Heinz spare floor at 55 West Monroe — all week availability.'),
+(5, 8,  'MONDAY,WEDNESDAY,FRIDAY',                   35,  55.00, 20, true,  'TransUnion flex seats with dual monitors at 191 North Wacker.'),
+(6, 18, 'TUESDAY,WEDNESDAY,THURSDAY',                18,  65.00, 18, true,  'Holland & Knight private office pods at 10 South LaSalle, mid-week only.'),
+(7, 10, 'MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY',  60,  40.00, 15, true,  'Hyatt HQ open floor at One East Wacker — great for large startup teams.'),
+(7, 10, 'WEDNESDAY,THURSDAY,FRIDAY',                 30,  35.00, 20, true,  'Hyatt second available floor at One East Wacker. Budget-friendly.'),
+(8, 2,  'TUESDAY,WEDNESDAY,THURSDAY,FRIDAY',         45,  50.00,  5, true,  '122 S. Michigan — modern space with historic architecture and cafeteria.');
 
 -- ─── BOOKINGS (sample reservations) ─────────────────────────
 INSERT INTO bookings (listing_id, startup_id, booking_date, desks_booked, total_price, status) VALUES
