@@ -21,14 +21,28 @@ export default function Home() {
       <section className="hero">
         <div className="hero-bg" />
         <div className="hero-content container">
-          <h1 className="hero-title">
-            Find your startup's next
-            <br />
-            <span className="hero-highlight">home in the Loop</span>
-          </h1>
-          <p className="hero-subtitle">
-            Premium corporate desks, daily rentals. Save money while revitalizing Chicago's downtown.
-          </p>
+          <div className="hero-split">
+            <div className="hero-split-left">
+              <h1 className="hero-title">
+                Find your startup's next
+                <br />
+                <span className="hero-highlight">home in the Loop</span>
+              </h1>
+              <p className="hero-subtitle">
+                Premium corporate desks, daily rentals. Save money while revitalizing Chicago's downtown.
+              </p>
+            </div>
+            <div className="hero-split-right">
+              <h1 className="hero-title">
+                Turn empty desks into
+                <br />
+                <span className="hero-highlight-host">tax-free revenue</span>
+              </h1>
+              <p className="hero-subtitle">
+                Earn a 2× tax deduction under the Illinois Enterprise Zone Act. Your vacancy becomes income.
+              </p>
+            </div>
+          </div>
 
           {/* Airbnb-style search bar */}
           <div className="hero-search">
@@ -59,7 +73,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <Link to="/map" className="hero-map-btn">
+          <Link to="/map" className="hero-map-btn" style={{display: 'flex', width: 'fit-content', margin: '16px auto 0'}}>
             <Map size={18} /> Explore on map
           </Link>
         </div>
