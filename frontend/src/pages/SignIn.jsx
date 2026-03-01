@@ -12,9 +12,10 @@ export default function SignIn() {
   const { signUp, isAuthenticated, role } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const initialRole = location.state?.defaultRole === 'host' ? 'host' : 'startup'
 
   const [form, setForm] = useState({
-    role: 'startup',
+    role: initialRole,
     username: '',
     password: '',
     confirmPassword: '',

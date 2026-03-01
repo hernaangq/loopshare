@@ -27,9 +27,19 @@ export default function Login() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const isSpaceSeekerHostIntent = role === 'startup' && location.state?.reason === 'space-seeker-host-intent'
 
   const safeRole = role === 'host' ? 'host' : 'startup'
   const redirectTo = resolveRedirectForRole(location.state?.from, safeRole)
+  const specialCtaTarget = isSpaceSeekerHostIntent
+    ? {
+      pathname: '/signin',
+      state: {
+        defaultRole: 'host',
+        from: '/host',
+      },
+    }
+    : redirectTo
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -52,9 +62,15 @@ export default function Login() {
     return (
       <section className="login-page">
         <div className="login-card">
-          <h1>Session already active</h1>
-          <p>You are already signed in as <strong>{roleLabel(role)}</strong>.</p>
-          <Link to={redirectTo} className="btn btn-primary">Continue <ArrowRight size={16} /></Link>
+          <h1>{isSpaceSeekerHostIntent ? 'Host your space' : 'Session already active'}</h1>
+          <p>
+            {isSpaceSeekerHostIntent
+              ? 'You are logged as a Space Seeker, sign up as Building Owner to start hosting your space.'
+              : <>You are already signed in as <strong>{roleLabel(role)}</strong>.</>}
+          </p>
+          <Link to={specialCtaTarget} className="btn btn-primary">
+            {isSpaceSeekerHostIntent ? 'Sign up as Building Owner' : 'Continue'} <ArrowRight size={16} />
+          </Link>
         </div>
       </section>
     )

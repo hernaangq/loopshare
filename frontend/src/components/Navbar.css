@@ -313,13 +313,6 @@ body {
   box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4);
 }
 
-.navbar-find-host-btn:active {
-  background: linear-gradient(135deg, #2f7fd3, #7ad4f3);
-  color: #fff !important;
-  transform: translateY(0);
-  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.3);
-}
-
 /* Live Monitor button */
 .navbar-monitor-btn {
   background: #161b22;
