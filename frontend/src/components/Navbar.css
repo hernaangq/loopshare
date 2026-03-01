@@ -1,9 +1,16 @@
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1200;
   background: var(--ls-white);
   border-bottom: 1px solid var(--ls-gray-200);
+  transition: transform 0.3s ease;
+}
+
+body {
+  padding-top: 92px;
 }
 
 .navbar-inner {
@@ -236,6 +243,7 @@
   .navbar-logo-text { font-size: 18px; }
   .loop-mark { width: 34px; height: 34px; }
   .loop-mark-ring { width: 34px; height: 34px; }
+  body { padding-top: 72px; }
 }
 
 /* AI Match button */

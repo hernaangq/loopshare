@@ -8,11 +8,27 @@ export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [visible, setVisible] = useState(true)
   const profileMenuRef = useRef(null)
   const { isAuthenticated, role, logout } = useAuth()
 
   const dashboardPath = role === 'host' ? '/host' : '/startup'
   const dashboardLabel = role === 'host' ? 'Building Owner Dashboard' : 'Space Seeker Dashboard'
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        setVisible(true)
+      } else {
+        setVisible(false)
+      }
+      lastScrollY = currentScrollY
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleLogout = () => {
     logout()
@@ -44,7 +60,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="navbar">
+    <header className="navbar" style={{ transform: visible ? 'translateY(0)' : 'translateY(-100%)' }}>
       <div className="navbar-inner container-wide">
         {/* Logo */}
         <Link to="/" className="navbar-logo">
