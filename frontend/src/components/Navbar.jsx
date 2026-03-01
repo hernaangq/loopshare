@@ -16,6 +16,15 @@ export default function Navbar() {
   })
   const profileMenuRef = useRef(null)
   const { isAuthenticated, role, logout } = useAuth()
+  const hostYourSpaceTarget = isAuthenticated && role === 'startup'
+    ? {
+      pathname: '/login',
+      state: {
+        reason: 'space-seeker-host-intent',
+        from: '/host',
+      },
+    }
+    : '/host'
 
   const dashboardPath = role === 'host' ? '/host' : '/startup'
   const dashboardLabel = role === 'host' ? 'Building Owner Dashboard' : 'Space Seeker Dashboard'
@@ -151,7 +160,7 @@ export default function Navbar() {
             <Radar size={14} /> Find New Host
           </Link>
           <Link
-            to="/host"
+            to={hostYourSpaceTarget}
             className={`navbar-link navbar-host-btn ${location.pathname === '/host' ? 'active' : ''}`}
           >
             Host your space

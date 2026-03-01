@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import editProfileSpaceSeekerBg from '../images/edit_profile1.png'
+import editProfileBuildingOwnerBg from '../images/edit_profile2.png'
 import './EditProfile.css'
 
 export default function EditProfile() {
   const { session, role, updateProfile } = useAuth()
+  const profileBackground = role === 'host' ? editProfileBuildingOwnerBg : editProfileSpaceSeekerBg
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -39,7 +42,10 @@ export default function EditProfile() {
   }
 
   return (
-    <section className="profile-page">
+    <section
+      className={`profile-page ${role === 'host' ? 'profile-page-host' : 'profile-page-startup'}`}
+      style={{ '--profile-bg-image': `url(${profileBackground})` }}
+    >
       <div className="container">
         <div className="profile-card">
         <h1>Edit profile</h1>

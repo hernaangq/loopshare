@@ -1,5 +1,10 @@
 .profile-page {
-  background: var(--ls-gray-100);
+  background-image:
+    linear-gradient(rgba(248, 250, 252, 0.28), rgba(248, 250, 252, 0.28)),
+    var(--profile-bg-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   padding-top: 32px;
   padding-bottom: 40px;
   min-height: calc(100vh - 72px);
