@@ -1,8 +1,12 @@
 
 <p align="center">
+  <a href="https://www.demonhacks.com/"><img src="CSS LOGO.png" alt="Microsoft" width="170"/></a>
+  &nbsp;&nbsp;&nbsp;
   <a href="https://www.demonhacks.com/"><img src="demonhacks.png" alt="DemonHacks" width="190"/></a>
   &nbsp;&nbsp;&nbsp;
   <a href="https://www.demonhacks.com/"><img src="https://www.demonhacks.com/Microsoft_logo.svg.png" alt="Microsoft" width="140"/></a>
+    &nbsp;&nbsp;&nbsp;
+  <a href="https://www.demonhacks.com/"><img src="upes.jpg" alt="Microsoft" width="120"/></a>
 </p>
 
 <p align="center">
