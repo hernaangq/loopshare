@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { agents, dealScout as dealScoutApi } from '../services/api'
-import { AlertTriangle, Zap, DollarSign, Leaf, Mail } from 'lucide-react'
+import { AlertTriangle, Zap, DollarSign, Mail } from 'lucide-react'
 import './Results.css'
 
 // Fix default Leaflet icon paths (Vite asset issue)
@@ -28,13 +28,6 @@ function makeIcon(rank) {
   })
 }
 
-function RiskBadge({ score }) {
-  const s = Number(score) || 0
-  const level = s <= 30 ? 'low' : s <= 60 ? 'medium' : 'high'
-  const label = s <= 30 ? 'Low Risk' : s <= 60 ? 'Medium Risk' : 'High Risk'
-  return <span className={`risk-badge risk-${level}`}>{label} ({s})</span>
-}
-
 function ScoreRing({ score }) {
   const s = Number(score) || 0
   return (
@@ -50,10 +43,6 @@ function ScoreRing({ score }) {
 
 function MatchCard({ match, rank }) {
   const [aiGenerating, setAiGenerating] = useState(false)
-
-  const risk   = (match.risk_report && typeof match.risk_report === 'object') ? match.risk_report : {}
-  const corpR  = Number(risk.corporate_risk) || 0
-  const startR = Number(risk.startup_risk)   || 0
 
   const mockEmailFromName = (name) => {
     const normalized = (name || 'contact')
@@ -133,22 +122,6 @@ function MatchCard({ match, rank }) {
           <div>
             <span className="stat-label">Est. Monthly Cost</span>
             <span className="stat-value">${(Number(match.estimated_monthly_cost) || 0).toLocaleString()}</span>
-          </div>
-        </div>
-        <div className="stat">
-          <Leaf size={16} className="stat-icon co2" />
-          <div>
-            <span className="stat-label">CO₂ Reduction</span>
-            <span className="stat-value">{match.co2_reduction_tons_year ?? '—'} t/yr</span>
-          </div>
-        </div>
-        <div className="stat">
-          <AlertTriangle size={16} className="stat-icon risk" />
-          <div>
-            <span className="stat-label">Corp / Startup Risk</span>
-            <span className="stat-value">
-              <RiskBadge score={corpR} /> / <RiskBadge score={startR} />
-            </span>
           </div>
         </div>
       </div>

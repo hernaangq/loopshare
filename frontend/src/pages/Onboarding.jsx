@@ -140,11 +140,8 @@ export default function Onboarding() {
 
 {error && <div className="form-error">{error}</div>}
 
-        <button type="submit" className="ai-launch-btn" disabled={loading}>
-          {loading
-            ? <><Loader2 size={18} className="spin" /> Initializing...</>
-            : <><span className="ai-btn-icon">⚡</span> Activate AI Agents</>
-          }
+        <button type="submit" className="btn-primary btn-lg submit-btn" disabled={loading}>
+          {loading ? <><Loader2 size={18} className="spin" /> Finding matches...</> : 'Find My Office Space →'}
         </button>
 
         <p className="form-disclaimer">

@@ -235,20 +235,19 @@
 
 /* AI Match button */
 .navbar-ai-btn {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: #fff !important;
-  padding: 8px 16px;
+  color: var(--ls-black) !important;
+  border: 1.5px solid var(--ls-black);
+  padding: 7px 15px;
   border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
-  letter-spacing: 0.01em;
-  transition: opacity 0.15s, transform 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 
-.navbar-ai-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-  color: #fff !important;
+.navbar-ai-btn:hover,
+.navbar-ai-btn.active {
+  background: var(--ls-black);
+  color: var(--ls-white) !important;
 }
 
 /* Live Monitor button */
