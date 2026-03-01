@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Search, Globe, Menu, User, Building2 } from 'lucide-react'
+import { Search, Globe, Menu, User, Star } from 'lucide-react'
 import { useState } from 'react'
 import './Navbar.css'
 
@@ -12,7 +12,16 @@ export default function Navbar() {
       <div className="navbar-inner container-wide">
         {/* Logo */}
         <Link to="/" className="navbar-logo">
-          <Building2 size={32} color="var(--ls-primary)" strokeWidth={2.5} />
+          <div className="chicago-flag-logo" aria-hidden="true">
+            <div className="flag-stripe" />
+            <div className="flag-stars">
+              <Star size={10} fill="currentColor" strokeWidth={1.8} />
+              <Star size={10} fill="currentColor" strokeWidth={1.8} />
+              <Star size={10} fill="currentColor" strokeWidth={1.8} />
+              <Star size={10} fill="currentColor" strokeWidth={1.8} />
+            </div>
+            <div className="flag-stripe" />
+          </div>
           <span className="navbar-logo-text">
             Loop<span className="logo-accent">Share</span>
           </span>

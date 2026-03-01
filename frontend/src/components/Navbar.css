@@ -21,6 +21,36 @@
   flex-shrink: 0;
 }
 
+.chicago-flag-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--ls-gray-200);
+  background: var(--ls-white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 4px;
+  box-shadow: var(--shadow-sm);
+}
+
+.flag-stripe {
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--ls-primary);
+}
+
+.flag-stars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--ls-accent);
+  line-height: 1;
+}
+
 .navbar-logo-text {
   font-size: 22px;
   font-weight: 800;
@@ -178,4 +208,5 @@
 @media (max-width: 768px) {
   .navbar-inner { height: 64px; }
   .navbar-logo-text { font-size: 18px; }
+  .chicago-flag-logo { width: 32px; height: 32px; }
 }

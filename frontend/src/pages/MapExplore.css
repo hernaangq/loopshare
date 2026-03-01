@@ -107,7 +107,7 @@
 }
 
 .marker-pin.marker-active {
-  background: var(--ls-primary, #FF385C);
+  background: var(--ls-primary, #41B6E6);
 }
 
 .marker-pin.marker-inactive {
