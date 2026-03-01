@@ -243,13 +243,35 @@
   font-weight: 600;
   font-size: 14px;
   border: none;
-  transition: opacity 0.15s, transform 0.15s;
+  transition: all 0.2s ease;
 }
 
 .navbar-ai-btn:hover,
 .navbar-ai-btn.active {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #9333ea, #c084fc);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
+}
+
+/* Host your space button */
+.navbar-host-btn {
+  background: var(--ls-black);
+  color: #fff !important;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.navbar-host-btn:hover,
+.navbar-host-btn.active {
+  background: #3a3a3a;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 /* Find New Host button */
@@ -261,13 +283,14 @@
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.01em;
-  transition: opacity 0.15s, transform 0.15s;
+  transition: all 0.2s ease;
 }
 
 .navbar-find-host-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #1269c4, #55c5f0);
   color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4);
 }
 
 /* Live Monitor button */

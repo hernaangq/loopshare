@@ -152,7 +152,7 @@ export default function Navbar() {
           </Link>
           <Link
             to="/host"
-            className={`navbar-link ${location.pathname === '/host' ? 'active' : ''}`}
+            className={`navbar-link navbar-host-btn ${location.pathname === '/host' ? 'active' : ''}`}
           >
             Host your space
           </Link>
