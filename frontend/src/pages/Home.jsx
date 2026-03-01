@@ -122,7 +122,7 @@ export default function Home() {
       {/* How It Works */}
       <section className="section how-it-works" style={{ marginTop: '4rem' }}>
         <div className="container">
-          <h2 className="section-title text-center mb-6">How LoopShare works</h2>
+          <h2 className="section-title text-center mb-6">How Loop<span className="logo-accent">Share</span> works</h2>
           <div className="hiw-grid">
             <div className="hiw-card">
               <div className="hiw-icon">
