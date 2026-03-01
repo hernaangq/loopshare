@@ -112,9 +112,14 @@ export default function Home() {
               </form>
             </div>
 
-            <Link to="/map" className="hero-map-btn">
-              <Map size={18} /> Explore on map
-            </Link>
+            <div className="hero-cta-row">
+              <Link to="/map" className="hero-map-btn">
+                <Map size={18} /> Explore on map
+              </Link>
+              <Link to="/map?mode=occupancy" className="hero-map-btn">
+                <Building2 size={18} /> Find new hosts
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -122,7 +127,7 @@ export default function Home() {
       {/* How It Works */}
       <section className="section how-it-works" style={{ marginTop: '4rem' }}>
         <div className="container">
-          <h2 className="section-title text-center mb-6">How LoopShare works</h2>
+          <h2 className="section-title text-center mb-6">How Loop<span className="logo-accent">Share</span> works</h2>
           <div className="hiw-grid">
             <div className="hiw-card">
               <div className="hiw-icon">
