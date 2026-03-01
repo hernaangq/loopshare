@@ -63,7 +63,7 @@ Additionally, a **Gradient Boosting ML model** trained on Chicago Energy Benchma
 │    ├─ RiskAgent     │     │                          │
 │    └─ OutreachAgent │     │  GradientBoostingModel   │
 │  DealScoutSvc       │     │  (sklearn, R²=0.94)      │
-│  ClaudeClient ──────┼───► │  Groq API (llama-3.3-70b)│
+│  ClaudeClient ──────┼───► │  Ollama (llama3.2)       │
 │  ChicagoApiClient   │     └──────────────────────────┘
 │  H2 in-memory DB    │
 │  (21 buildings,     │
@@ -94,7 +94,7 @@ Additionally, a **Gradient Boosting ML model** trained on Chicago Energy Benchma
 | Layer | Technology | Version |
 |-------|-----------|---------|
 | Backend | Java, Spring Boot | 11 / 2.7.17 |
-| AI client | Groq API — `llama-3.3-70b-versatile` | Free tier |
+| AI client | Ollama — `llama3.2` (local) | — |
 | ORM | Spring Data JPA + Hibernate | — |
 | Database | H2 in-memory (seeded on startup) | — |
 | API docs | springdoc-openapi (Swagger UI) | — |
@@ -117,9 +117,9 @@ Additionally, a **Gradient Boosting ML model** trained on Chicago Energy Benchma
 | Node.js | 18+ | With npm |
 | Python | 3.9+ | For the ML model API |
 | pip | 23+ | Python package manager |
-| Groq API key | — | Free at [console.groq.com](https://console.groq.com) — no credit card required |
+| Ollama | latest | Install from [ollama.com](https://ollama.com), then run `ollama pull llama3.2` |
 
-No Docker or external database installation is required. The backend uses an H2 in-memory database that seeds itself automatically.
+No Docker, external database, or cloud API key is required. The backend uses an H2 in-memory database that seeds itself automatically and Ollama runs the LLM locally.
 
 ---
 
@@ -223,8 +223,9 @@ spring.sql.init.mode=always
 spring.h2.console.enabled=true
 spring.h2.console.path=/h2-console
 
-# ── AI — Groq (free tier, no credit card required) ──────────────
-groq.api.key=YOUR_GROQ_API_KEY_HERE
+# ── Ollama (local LLM — install at https://ollama.com, then: ollama pull llama3.2) ───
+ollama.base.url=http://localhost:11434
+ollama.model=llama3.2
 
 # ── Swagger UI ───────────────────────────────────────────────────
 springdoc.api-docs.path=/api-docs
@@ -238,9 +239,9 @@ dealscout.enrichment.require-verified-email=true
 dealscout.outreach.allow-unverified-drafts=true
 ```
 
-Replace `YOUR_GROQ_API_KEY_HERE` with a key from [console.groq.com](https://console.groq.com). A demo key is already set for convenience.
+Ollama must be running locally on port 11434. Install from [ollama.com](https://ollama.com) and pull the model: `ollama pull llama3.2`. No API key required.
 
-**Changing the LLM model:** In `ClaudeClient.java`, find the `model` field and swap `llama-3.3-70b-versatile` for `mixtral-8x7b-32768` or `gemma2-9b-it` if you hit Groq's free-tier rate limits (~6,000 tokens/min).
+**Changing the LLM model:** Set `ollama.model` in `application.properties` to any Ollama-compatible model (e.g., `mistral`, `llama3.1`, `gemma2`). Larger models produce better results but require more RAM/VRAM.
 
 ### Frontend — `frontend/vite.config.js`
 
@@ -303,7 +304,7 @@ All four agents share the same underlying `ClaudeClient.runAgentLoop()`, which i
 messages = [system_prompt, user_message]
 
 repeat up to 10 times:
-  POST https://api.groq.com/openai/v1/chat/completions
+  POST http://localhost:11434/api/chat  (Ollama)
 
   if finish_reason == "stop"    → return text content
   if finish_reason == "tool_calls":
@@ -313,7 +314,7 @@ repeat up to 10 times:
     continue loop
 ```
 
-> **Implementation note:** Tools are defined in Anthropic JSON schema format (`input_schema`). `ClaudeClient` converts them to OpenAI function-calling format before sending to Groq.
+> **Implementation note:** Tools are defined in Anthropic JSON schema format (`input_schema`). `ClaudeClient` converts them to OpenAI/Ollama function-calling format before sending to the local Ollama server.
 
 ---
 
@@ -327,7 +328,7 @@ repeat up to 10 times:
 |--------|---------|
 | H2 database | All active listings with building, host, price, days, desks |
 | Chicago Energy Benchmarking API (`xq83-jr8c`) | Real EUI (kBtu/sq ft) per building |
-| Groq LLM (1 call, no tool-use) | Natural-language explanation for each match |
+| Ollama LLM (1 call, no tool-use) | Natural-language explanation for each match |
 
 **Scoring formula:**
 
@@ -405,7 +406,7 @@ Coordinates the full pipeline sequentially for a given startup profile:
 3. Return combined result as a single JSON object
 ```
 
-**Total runtime:** ~60–90 seconds (3 matches × ~3 agent calls each, subject to Groq rate limits).
+**Total runtime:** ~60–90 seconds (3 matches × ~3 agent calls each, varies by local hardware and model size).
 
 ---
 
@@ -703,7 +704,7 @@ sharedloop/
 │       │   │   └── Booking.java
 │       │   ├── repository/                     # Spring Data JPA repos (1 per entity)
 │       │   ├── service/
-│       │   │   ├── ClaudeClient.java           # Groq API wrapper — implements tool-use loop
+│       │   │   ├── ClaudeClient.java           # Ollama API wrapper — implements tool-use loop
 │       │   │   ├── ChicagoApiClient.java       # Chicago Open Data Portal wrapper (4 APIs)
 │       │   │   ├── OrchestratorService.java    # Sequential pipeline coordinator
 │       │   │   ├── MatcherAgent.java           # DB + Energy API + LLM scoring
@@ -713,7 +714,7 @@ sharedloop/
 │       │   │   └── DealScoutService.java       # Ghost building outreach pipeline
 │       │   └── dealscout/                      # Deal Scout data classes (8 classes)
 │       └── resources/
-│           ├── application.properties          # Server, DB, Groq, Deal Scout config
+│           ├── application.properties          # Server, DB, Ollama, Deal Scout config
 │           └── data.sql                        # H2 seed data (21 buildings, 8 hosts, ...)
 │
 ├── frontend/                                   # React 19 + Vite 7 SPA
@@ -812,8 +813,8 @@ Base URL pattern: `https://data.cityofchicago.org/resource/{socrata-id}.json`
 | **No persistence** | H2 is in-memory only. All data is recreated from `data.sql` on every backend restart. Bookings, new listings, and new buildings are lost on shutdown. |
 | **No emails sent** | The "Approve & Send" button shows a success toast in demo mode. `OutreachAgent` content is for human review only. |
 | **AI content** | All generated emails, lease drafts, risk scores, and explanations are AI-generated and must be reviewed by a qualified person before use. |
-| **Groq rate limits** | The free tier supports ~6,000 tokens/min. If you see 429 errors, add a short `Thread.sleep()` between agent calls in `OrchestratorService.java`, or upgrade to a paid Groq plan. |
+| **Ollama performance** | LLM inference runs locally via Ollama. Speed depends on your hardware (GPU recommended). If responses are slow, try a smaller model like `llama3.2` or `gemma2`. |
 | **ML model size** | The Gradient Boosting model is trained on ~50 Loop buildings (those with both 2019 baseline and 2023 data). Predictions outside this distribution may be less reliable. |
 | **Web scraping** | Deal Scout enrichment uses Jsoup to scrape contact data. Review the terms of service of any target site before enabling enrichment in a production environment. |
-| **Groq API key** | A demo key is committed to the repository for convenience. Replace it with your own key from [console.groq.com](https://console.groq.com) for production use and to avoid shared rate limits. |
+| **Ollama required** | Ollama must be running locally (`http://localhost:11434`) before starting the backend. Install from [ollama.com](https://ollama.com) and run `ollama pull llama3.2`. No cloud API key needed. |
 | **Swagger UI port** | Swagger UI is at `http://localhost:8003/swagger-ui.html` (not 8000 as referenced in some older documentation). |
