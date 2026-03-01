@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
-import { Link } from 'react-router-dom'
-import { Users, DollarSign, Building2, Activity, Ghost, AlertTriangle, CheckCircle } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
+import { Users, DollarSign, Building2, Activity, Ghost, AlertTriangle, CheckCircle, Mail } from 'lucide-react'
 import L from 'leaflet'
-import { buildings as buildingsApi, listings as listingsApi } from '../services/api'
+import { buildings as buildingsApi, listings as listingsApi, dealScout as dealScoutApi } from '../services/api'
 import DayChips from '../components/DayChips'
 import 'leaflet/dist/leaflet.css'
 import './MapExplore.css'
@@ -13,6 +13,7 @@ const CENTER = [41.8819, -87.6278]
 
 // ML API base URL — Flask runs on port 5000 with CORS enabled
 const ML_API = 'http://localhost:5000'
+const CHICAGO_LICENSES_API = 'https://data.cityofchicago.org/resource/uupf-x98q.json'
 
 // Bounding box for the Chicago Loop / Near West / South Loop
 const LOOP_BOUNDS = { latMin: 41.85, latMax: 41.91, lngMin: -87.66, lngMax: -87.60 }
@@ -70,7 +71,9 @@ function FlyToBuilding({ building, latKey = 'latitude', lngKey = 'longitude' }) 
 }
 
 export default function MapExplore() {
-  const [mode, setMode] = useState('listings') // 'listings' | 'occupancy'
+  const location = useLocation()
+  const initialMode = new URLSearchParams(location.search).get('mode') === 'occupancy' ? 'occupancy' : 'listings'
+  const [mode, setMode] = useState(initialMode) // 'listings' | 'occupancy'
 
   // Listings mode state
   const [buildingsList, setBuildingsList] = useState([])
@@ -83,6 +86,10 @@ export default function MapExplore() {
   const [mlStats, setMlStats] = useState(null)
   const [mlError, setMlError] = useState(null)
   const [selectedMlBuilding, setSelectedMlBuilding] = useState(null)
+  const [companiesByBuilding, setCompaniesByBuilding] = useState({})
+  const [companiesLoadingByBuilding, setCompaniesLoadingByBuilding] = useState({})
+  const [companiesErrorByBuilding, setCompaniesErrorByBuilding] = useState({})
+  const [proposalLoadingKey, setProposalLoadingKey] = useState('')
   const mlMarkerRefs = useRef({})
 
   const validMlBuildings = useMemo(() =>
@@ -158,6 +165,156 @@ export default function MapExplore() {
     if (ghostScore >= 25) return '#f59e0b'
     return '#22c55e'
   }
+
+  const getMlBuildingKey = (building) => String(building?.ID || '')
+
+  const normalizeAddress = (value) => {
+    if (!value) return ''
+    return String(value)
+      .toLowerCase()
+      .replace(/[^a-z0-9 ]/g, ' ')
+      .replace(/\b(chicago|illinois|il|usa)\b/g, ' ')
+      .replace(/\b\d{5}(?:-\d{4})?\b/g, ' ')
+      .replace(/\b(north)\b/g, 'n')
+      .replace(/\b(south)\b/g, 's')
+      .replace(/\b(east)\b/g, 'e')
+      .replace(/\b(west)\b/g, 'w')
+      .replace(/\b(drive)\b/g, 'dr')
+      .replace(/\b(street)\b/g, 'st')
+      .replace(/\b(avenue)\b/g, 'ave')
+      .replace(/\b(boulevard)\b/g, 'blvd')
+      .replace(/\b(place)\b/g, 'pl')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+
+  const addressKey = (value) => {
+    const normalized = normalizeAddress(value)
+    const tokens = normalized.split(' ').filter(Boolean)
+    const ignored = new Set(['n', 's', 'e', 'w', 'dr', 'st', 'ave', 'blvd', 'pl', 'rd', 'ct', 'ste', 'fl', 'rm'])
+    const kept = tokens.filter(t => !ignored.has(t))
+    return kept.slice(0, 3).join(' ')
+  }
+
+  const looseAddressMatch = (buildingAddress, rowAddress) => {
+    const left = normalizeAddress(buildingAddress)
+    const right = normalizeAddress(rowAddress)
+    if (!left || !right) return false
+    if (left.includes(right) || right.includes(left)) return true
+
+    const leftKey = addressKey(left)
+    const rightKey = addressKey(right)
+    if (leftKey && rightKey && (leftKey.includes(rightKey) || rightKey.includes(leftKey))) return true
+
+    const leftTokens = left.split(' ').filter(Boolean)
+    const rightTokens = right.split(' ').filter(Boolean)
+    const overlap = leftTokens.filter(t => rightTokens.includes(t)).length
+    return overlap >= 2
+  }
+
+  const fetchChicagoCompaniesDirect = async (building) => {
+    const rawAddress = building?.Address || ''
+    const normalized = normalizeAddress(rawAddress)
+    const querySeed = normalized.split(' ').slice(0, 4).join(' ') || String(building?.['Property Name'] || '')
+    const query = encodeURIComponent(querySeed)
+    const url = `${CHICAGO_LICENSES_API}?$limit=100&$q=${query}`
+    const rows = await fetch(url).then(r => {
+      if (!r.ok) throw new Error(`Chicago API HTTP ${r.status}`)
+      return r.json()
+    })
+
+    const companies = []
+    const seen = new Set()
+    for (const row of Array.isArray(rows) ? rows : []) {
+      const companyName = row?.doing_business_as_name || row?.legal_name || row?.business_name
+      const rowAddress = row?.address || row?.street_address || row?.site_address
+      if (!companyName || !rowAddress) continue
+      if (!looseAddressMatch(rawAddress, rowAddress)) continue
+
+      const key = String(companyName).toLowerCase().trim()
+      if (!key || seen.has(key)) continue
+      seen.add(key)
+
+      companies.push({
+        companyName,
+        licenseStatus: row?.license_status || row?.status || 'AAI',
+        licenseNumber: row?.license_number || row?.account_number || null,
+        address: rowAddress,
+        latitude: row?.latitude || null,
+        longitude: row?.longitude || null,
+        sourceDataset: 'uupf-x98q',
+      })
+
+      if (companies.length >= 12) break
+    }
+
+    return companies
+  }
+
+  const loadCompaniesForBuilding = async (building) => {
+    const buildingKey = getMlBuildingKey(building)
+    const cachedCompanies = companiesByBuilding[buildingKey]
+    const hasNonEmptyCache = Array.isArray(cachedCompanies) && cachedCompanies.length > 0
+    if (!buildingKey || hasNonEmptyCache || companiesLoadingByBuilding[buildingKey]) {
+      return
+    }
+
+    setCompaniesLoadingByBuilding(prev => ({ ...prev, [buildingKey]: true }))
+    setCompaniesErrorByBuilding(prev => ({ ...prev, [buildingKey]: '' }))
+    try {
+      let companies = await dealScoutApi.getLicenseCompanies({
+        buildingName: building['Property Name'],
+        buildingAddress: building.Address,
+        latitude: building.Latitude,
+        longitude: building.Longitude,
+        dataset: 'active',
+        includeLocal: false,
+        limit: 8,
+      })
+
+      if (!Array.isArray(companies) || companies.length === 0) {
+        companies = await fetchChicagoCompaniesDirect(building)
+      }
+
+      setCompaniesByBuilding(prev => ({ ...prev, [buildingKey]: Array.isArray(companies) ? companies : [] }))
+    } catch {
+      setCompaniesErrorByBuilding(prev => ({
+        ...prev,
+        [buildingKey]: 'Could not load tenant companies from license datasets.',
+      }))
+    } finally {
+      setCompaniesLoadingByBuilding(prev => ({ ...prev, [buildingKey]: false }))
+    }
+  }
+
+  const handleCompanyProposal = async (building, company) => {
+    const companyName = company?.companyName
+    if (!companyName) return
+
+    const proposalKey = `${getMlBuildingKey(building)}::${companyName}`
+    setProposalLoadingKey(proposalKey)
+    try {
+      const proposal = await dealScoutApi.generateCompanyProposal({
+        buildingName: building['Property Name'],
+        buildingAddress: building.Address,
+        companyName,
+      })
+
+      const to = proposal?.to || `${companyName.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '') || 'contact'}@mock-loopshare.com`
+      const subject = proposal?.subject || `LoopShare proposal for ${companyName}`
+      const body = proposal?.body || `Hi,\n\nI have a proposal for ${companyName} at ${building['Property Name']}.\n\nBest,\nLoopShare`
+      window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    } catch (err) {
+      alert('AI proposal failed: ' + err.message)
+    } finally {
+      setProposalLoadingKey('')
+    }
+  }
+
+  useEffect(() => {
+    if (mode !== 'occupancy' || !selectedMlBuilding) return
+    loadCompaniesForBuilding(selectedMlBuilding)
+  }, [mode, selectedMlBuilding])
 
   return (
     <div className="map-page">
@@ -377,6 +534,41 @@ export default function MapExplore() {
                             <span>Sq Ft</span>
                             <strong>{b['Gross Floor Area - Buildings (sq ft)']?.toLocaleString() || '—'}</strong>
                           </div>
+                        </div>
+
+                        <div className="occ-companies">
+                          <h5>Companies in this building</h5>
+                          {companiesLoadingByBuilding[getMlBuildingKey(b)] && (
+                            <p className="occ-companies-loading">Loading companies…</p>
+                          )}
+                          {companiesErrorByBuilding[getMlBuildingKey(b)] && (
+                            <p className="occ-companies-error">{companiesErrorByBuilding[getMlBuildingKey(b)]}</p>
+                          )}
+                          {!companiesLoadingByBuilding[getMlBuildingKey(b)] &&
+                            !companiesErrorByBuilding[getMlBuildingKey(b)] &&
+                            ((companiesByBuilding[getMlBuildingKey(b)] || []).length === 0) && (
+                              <p className="occ-companies-empty">No licensed companies found for this building.</p>
+                          )}
+
+                          {(companiesByBuilding[getMlBuildingKey(b)] || []).map((company) => {
+                            const proposalKey = `${getMlBuildingKey(b)}::${company.companyName}`
+                            return (
+                              <div key={proposalKey} className="occ-company-row">
+                                <div className="occ-company-meta">
+                                  <strong>{company.companyName}</strong>
+                                  <span>{company.licenseStatus || 'License status unknown'}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="btn btn-outline occ-company-btn"
+                                  onClick={() => handleCompanyProposal(b, company)}
+                                  disabled={proposalLoadingKey === proposalKey}
+                                >
+                                  <Mail size={13} /> {proposalLoadingKey === proposalKey ? 'Generating...' : 'Generate AI email proposal'}
+                                </button>
+                              </div>
+                            )
+                          })}
                         </div>
                       </div>
                     </Popup>

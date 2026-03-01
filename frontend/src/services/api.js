@@ -77,6 +77,19 @@ export const dealScout = {
   run: (data) => request('/deal-scout/runs', { method: 'POST', body: JSON.stringify(data || {}) }),
   getRuns: () => request('/deal-scout/runs'),
   getRun: (runId) => request(`/deal-scout/runs/${runId}`),
+  getLicenseCompanies: ({ buildingName, buildingAddress, latitude, longitude, dataset = 'active', includeLocal = false, limit = 8 } = {}) => {
+    const params = new URLSearchParams()
+    if (buildingName) params.set('buildingName', buildingName)
+    if (buildingAddress) params.set('buildingAddress', buildingAddress)
+    if (latitude != null) params.set('latitude', String(latitude))
+    if (longitude != null) params.set('longitude', String(longitude))
+    if (dataset) params.set('dataset', dataset)
+    if (includeLocal != null) params.set('includeLocal', String(includeLocal))
+    if (limit) params.set('limit', String(limit))
+    return request(`/deal-scout/licenses/companies?${params.toString()}`)
+  },
+  generateCompanyProposal: (data) =>
+    request('/deal-scout/company-proposal', { method: 'POST', body: JSON.stringify(data || {}) }),
   updateStatus: (runId, buildingId, status) =>
     request(`/deal-scout/runs/${runId}/opportunities/${buildingId}/status?status=${encodeURIComponent(status)}`, {
       method: 'PATCH',

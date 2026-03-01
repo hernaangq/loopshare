@@ -383,6 +383,58 @@
   font-size: 13px;
 }
 
+.occ-companies {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ls-gray-200, #ebebeb);
+}
+
+.occ-companies h5 {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--ls-gray-800, #333);
+}
+
+.occ-companies-loading,
+.occ-companies-error,
+.occ-companies-empty {
+  font-size: 12px;
+  color: var(--ls-gray-500, #717171);
+  margin-bottom: 8px;
+}
+
+.occ-company-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--ls-gray-200, #ebebeb);
+  border-radius: var(--radius-sm, 8px);
+  margin-bottom: 8px;
+}
+
+.occ-company-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.occ-company-meta strong {
+  font-size: 12px;
+  color: var(--ls-gray-900, #222);
+}
+
+.occ-company-meta span {
+  font-size: 11px;
+  color: var(--ls-gray-500, #717171);
+}
+
+.occ-company-btn {
+  width: 100%;
+  justify-content: center;
+}
+
 /* ─── Occupancy Legend ────────────────────── */
 .occ-legend {
   position: absolute;
