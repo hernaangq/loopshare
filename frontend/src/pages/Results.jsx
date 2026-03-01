@@ -13,7 +13,7 @@ import {
 } from 'chart.js'
 import { Radar } from 'react-chartjs-2'
 import { agents, dealScout as dealScoutApi } from '../services/api'
-import { AlertTriangle, Zap, DollarSign, Mail } from 'lucide-react'
+import { AlertTriangle, Zap, DollarSign, Mail, ArrowLeft, Trophy, Target, TrendingUp } from 'lucide-react'
 import './Results.css'
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip)
@@ -192,7 +192,9 @@ function MatchCard({ match, rank }) {
   }
 
   return (
-    <div className={`match-card rank-${rank + 1}`}>
+    <div className="match-card">
+      <div className={`match-card-stripe rank-${rank + 1}`} />
+      <div className="match-card-body">
 
       {/* Header: rank badge · building name · match score ring */}
       <div className="match-card-header">
@@ -251,6 +253,7 @@ function MatchCard({ match, rank }) {
           <Mail size={15} /> {aiGenerating ? 'Generating AI draft...' : 'Generate AI email proposal'}
         </button>
       </div>
+      </div>
     </div>
   )
 }
@@ -300,48 +303,74 @@ export default function Results() {
     rank: i,
   }))
 
+  const bestScore = matches.length > 0 ? (Number(matches[0].match_score) || 0) : 0
+
   return (
     <div className="results-page">
-      <div className="results-header">
-        <div>
-          <h1>Your Top Matches</h1>
-          <p>{matches.length} office space{matches.length !== 1 ? 's' : ''} found for <strong>{profile?.company || 'your team'}</strong> in the Loop</p>
-        </div>
-        <button className="btn-secondary" onClick={() => navigate('/onboarding')}>← New Search</button>
-      </div>
-
-      <div className="results-map-wrap">
-        <MapContainer center={LOOP_CENTER} zoom={15} className="results-map" scrollWheelZoom={false}>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="© OpenStreetMap contributors"
-          />
-          {markers.map((m, i) => (
-            <Marker key={i} position={[m.lat, m.lng]} icon={makeIcon(m.rank)}>
-              <Popup><strong>#{m.rank + 1} {m.name}</strong></Popup>
-            </Marker>
-          ))}
-        </MapContainer>
-        <div className="map-legend">
-          {RANK_COLORS.map((c, i) => (
-            <span key={i} className="legend-item">
-              <span className="legend-dot" style={{ background: c }} />
-              #{i + 1} Match
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="matches-list">
-        {matches.map((match, i) => (
-          <MatchCard key={i} match={match} rank={i} profile={profile} />
-        ))}
-        {matches.length === 0 && (
-          <div className="no-matches">
-            <p>No matches found. Try adjusting your criteria.</p>
-            <button className="btn-primary" onClick={() => navigate('/onboarding')}>Edit Search</button>
+      {/* ── Dark hero header ── */}
+      <div className="results-hero">
+        <div className="results-hero-inner">
+          <div>
+            <h1>Your Top Matches</h1>
+            <p className="results-hero-sub">
+              {matches.length} office space{matches.length !== 1 ? 's' : ''} found for <strong>{profile?.company || 'your team'}</strong> in the Chicago Loop
+            </p>
           </div>
-        )}
+          <div className="results-hero-right">
+            <div className="results-hero-stats">
+              <div className="rh-stat">
+                <span className="rh-stat-value">{matches.length}</span>
+                <span className="rh-stat-label">Matches</span>
+              </div>
+              <div className="rh-stat">
+                <span className="rh-stat-value">{bestScore}</span>
+                <span className="rh-stat-label">Top Score</span>
+              </div>
+            </div>
+            <button className="btn-back" onClick={() => navigate('/onboarding')}>
+              <ArrowLeft size={14} /> New Search
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Two-column body ── */}
+      <div className="results-body">
+        {/* Left: match cards */}
+        <div className="matches-list">
+          {matches.map((match, i) => (
+            <MatchCard key={i} match={match} rank={i} profile={profile} />
+          ))}
+          {matches.length === 0 && (
+            <div className="no-matches">
+              <p>No matches found. Try adjusting your criteria.</p>
+              <button className="btn-primary" onClick={() => navigate('/onboarding')}>Edit Search</button>
+            </div>
+          )}
+        </div>
+
+        {/* Right: sticky map */}
+        <div className="results-map-panel">
+          <MapContainer center={LOOP_CENTER} zoom={15} className="results-map" scrollWheelZoom={false}>
+            <TileLayer
+              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            />
+            {markers.map((m, i) => (
+              <Marker key={i} position={[m.lat, m.lng]} icon={makeIcon(m.rank)}>
+                <Popup><strong>#{m.rank + 1} {m.name}</strong></Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+          <div className="map-legend">
+            {RANK_COLORS.map((c, i) => (
+              <span key={i} className="legend-item">
+                <span className="legend-dot" style={{ background: c }} />
+                #{i + 1} Match
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )

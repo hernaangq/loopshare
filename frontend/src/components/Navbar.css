@@ -235,19 +235,20 @@
 
 /* AI Match button */
 .navbar-ai-btn {
-  color: var(--ls-black) !important;
-  border: 1.5px solid var(--ls-black);
-  padding: 7px 15px;
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: #fff !important;
+  padding: 8px 16px;
   border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
-  transition: background 0.15s, color 0.15s;
+  border: none;
+  transition: opacity 0.15s, transform 0.15s;
 }
 
 .navbar-ai-btn:hover,
 .navbar-ai-btn.active {
-  background: var(--ls-black);
-  color: var(--ls-white) !important;
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* Find New Host button */

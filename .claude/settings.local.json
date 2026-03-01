@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(java:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(wc:*)"
     ]
   }
 }
