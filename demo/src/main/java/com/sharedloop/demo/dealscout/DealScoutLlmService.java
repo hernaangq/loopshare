@@ -24,11 +24,14 @@ public class DealScoutLlmService {
     @Value("${dealscout.llm.provider:mock}")
     private String provider;
 
-    @Value("${dealscout.llm.base-url:https://api.openai.com}")
+    @Value("${dealscout.llm.base-url:http://localhost:11434}")
     private String baseUrl;
 
     @Value("${dealscout.llm.model:gpt-4o-mini}")
     private String model;
+
+    @Value("${dealscout.llm.ollama-model:llama3}")
+    private String ollamaModel;
 
     @Value("${dealscout.llm.api-key:}")
     private String apiKey;
@@ -39,6 +42,14 @@ public class DealScoutLlmService {
     }
 
     public DraftResult draftEmail(EmailContext context) {
+        if ("ollama".equalsIgnoreCase(provider)) {
+            try {
+                return draftWithOllama(context);
+            } catch (Exception ignored) {
+                return draftTemplate(context);
+            }
+        }
+
         boolean shouldUseOpenAi = "openai".equalsIgnoreCase(provider) && apiKey != null && !apiKey.isBlank();
         if (shouldUseOpenAi) {
             try {
@@ -47,6 +58,7 @@ public class DealScoutLlmService {
                 return draftTemplate(context);
             }
         }
+
         return draftTemplate(context);
     }
 
@@ -90,6 +102,66 @@ public class DealScoutLlmService {
 
         JsonNode root = objectMapper.readTree(response.body());
         String content = root.path("choices").path(0).path("message").path("content").asText();
+        if (content == null || content.isBlank()) {
+            throw new IOException("LLM response content is empty");
+        }
+
+        JsonNode generated = objectMapper.readTree(content);
+        String subject = generated.path("subject").asText();
+        String emailBody = generated.path("body").asText();
+        if (subject == null || subject.isBlank() || emailBody == null || emailBody.isBlank()) {
+            throw new IOException("LLM JSON output missing subject/body");
+        }
+
+        return new DraftResult(subject, emailBody);
+    }
+
+    private DraftResult draftWithOllama(EmailContext context) throws IOException, InterruptedException {
+        String prompt = "You are an enterprise B2B sales assistant for LoopShare. " +
+                "Draft one concise personalized cold email (120-180 words). " +
+                "Include: specific building name, EUI improvement percent, and estimated annual tax savings in USD. " +
+                "Tone: professional, warm, concrete CTA for 15-minute call. " +
+                "Return JSON with keys: subject, body.\n\n" +
+                "Context:\n" +
+                "Building: " + context.buildingName + "\n" +
+                "Address: " + context.buildingAddress + "\n" +
+                "Contact: " + context.contactName + "\n" +
+                "Company: " + context.companyName + "\n" +
+                "EUI drop %: " + context.euiDropPct + "\n" +
+                "Estimated annual tax savings USD: " + context.estimatedSavingsUsd + "\n";
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("model", ollamaModel);
+        body.put("prompt", prompt);
+        body.put("temperature", 0.3);
+        body.put("top_p", 0.95);
+        body.put("max_tokens", 400);
+
+        String requestJson = objectMapper.writeValueAsString(body);
+        String endpoint = baseUrl.endsWith("/") ? baseUrl + "api/generate" : baseUrl + "/api/generate";
+
+        HttpRequest request = HttpRequest.newBuilder(URI.create(endpoint))
+                .timeout(Duration.ofSeconds(20))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(requestJson, StandardCharsets.UTF_8))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new IOException("LLM request failed with status " + response.statusCode());
+        }
+
+        JsonNode root = objectMapper.readTree(response.body());
+        JsonNode contentNode = root.path("choices").path(0).path("content");
+        String content;
+        if (contentNode.isTextual()) {
+            content = contentNode.asText();
+        } else if (contentNode.has("text")) {
+            content = contentNode.path("text").asText();
+        } else {
+            content = contentNode.toString();
+        }
+
         if (content == null || content.isBlank()) {
             throw new IOException("LLM response content is empty");
         }

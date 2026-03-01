@@ -14,4 +14,8 @@ public class DealScoutContact {
     private String website;
     private String sourceNotes;
     private Double confidence;
+    private Boolean emailVerified;
+    private Boolean contactVerified;
+    private Integer sourceCount;
+    private String verificationNotes;
 }

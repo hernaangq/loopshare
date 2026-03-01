@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { MapPin, Users, DollarSign, Star, Building2, Wifi, Coffee, Car, Shield, Calendar, ArrowLeft } from 'lucide-react'
-import { listings as listingsApi, bookings as bookingsApi, startups as startupsApi } from '../services/api'
+import { MapPin, Users, DollarSign, Star, Building2, Wifi, Coffee, Car, Shield, Calendar, ArrowLeft, Mail } from 'lucide-react'
+import { listings as listingsApi, bookings as bookingsApi, startups as startupsApi, dealScout as dealScoutApi } from '../services/api'
 import DayChips from '../components/DayChips'
+import { getBuildingImage } from '../utils/buildingImages'
 import './ListingDetail.css'
 
 const AMENITY_ICONS = {
@@ -19,6 +20,7 @@ export default function ListingDetail() {
   const [startupList, setStartupList] = useState([])
   const [bookingForm, setBookingForm] = useState({ startupId: '', desks: 1, date: '' })
   const [bookingSuccess, setBookingSuccess] = useState(false)
+  const [aiGenerating, setAiGenerating] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -50,6 +52,53 @@ export default function ListingDetail() {
     }
   }
 
+  const handleAiProposal = async () => {
+    if (!listing?.building?.id) {
+      alert('Building data not available for this listing.')
+      return
+    }
+
+    setAiGenerating(true)
+    try {
+      const run = await dealScoutApi.run({
+        topN: 1,
+        dryRun: false,
+        benchmarks: [
+          {
+            buildingId: listing.building.id,
+            reportingYear: new Date().getFullYear(),
+            source: 'ui-listing-detail-ai-proposal',
+          },
+        ],
+      })
+
+      const opportunity = (run.opportunities || []).find(o => o.buildingId === listing.building.id) || run.opportunities?.[0]
+      if (!opportunity) {
+        alert('AI agent did not return an outreach proposal for this building.')
+        return
+      }
+
+      const to = opportunity.contact?.email || ''
+      const subject = opportunity.emailSubject || `LoopShare proposal for ${building.name}`
+      const body = opportunity.emailBody || `Hi,\n\nI have a proposal for ${building.name}.\n\nBest,\nLoopShare`
+
+      if (!to) {
+        alert('Proposal generated, but no contact email was found. Check Deal Scout runs for the draft.')
+        return
+      }
+
+      window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+      if (run.runId && opportunity.buildingId) {
+        dealScoutApi.updateStatus(run.runId, opportunity.buildingId, 'SENT').catch(() => {})
+      }
+    } catch (err) {
+      alert('AI proposal failed: ' + err.message)
+    } finally {
+      setAiGenerating(false)
+    }
+  }
+
   if (loading) return <div className="container py-12 text-center">Loading...</div>
   if (!listing) return <div className="container py-12 text-center">Listing not found</div>
 
@@ -66,7 +115,7 @@ export default function ListingDetail() {
       {/* Image */}
       <div className="detail-image-grid">
         <img
-          src={building.imageUrl || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200'}
+          src={getBuildingImage(building)}
           alt={building.name}
           className="detail-hero-img"
         />
@@ -247,6 +296,10 @@ export default function ListingDetail() {
             <p className="booking-note text-xs text-muted text-center mt-2">
               You won't be charged yet. Host confirmation required.
             </p>
+
+            <button className="btn btn-outline mt-4" style={{ width: '100%' }} onClick={handleAiProposal} disabled={aiGenerating}>
+              <Mail size={16} /> {aiGenerating ? 'Generating AI draft...' : 'Generate AI email proposal'}
+            </button>
           </div>
         </div>
       </div>

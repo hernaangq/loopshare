@@ -6,6 +6,7 @@ import com.sharedloop.demo.model.Listing;
 import com.sharedloop.demo.repository.BuildingRepository;
 import com.sharedloop.demo.repository.HostRepository;
 import com.sharedloop.demo.repository.ListingRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -20,21 +21,27 @@ import java.util.stream.Collectors;
 @Service
 public class DealScoutService {
 
+    @Value("${dealscout.outreach.allow-unverified-drafts:true}")
+    private boolean allowUnverifiedDrafts;
+
     private final BuildingRepository buildingRepository;
     private final HostRepository hostRepository;
     private final ListingRepository listingRepository;
     private final DealScoutLlmService llmService;
+    private final EnrichmentService enrichmentService;
 
     private final Map<String, DealScoutRunResponse> runHistory = new ConcurrentHashMap<>();
 
     public DealScoutService(BuildingRepository buildingRepository,
                             HostRepository hostRepository,
                             ListingRepository listingRepository,
-                            DealScoutLlmService llmService) {
+                            DealScoutLlmService llmService,
+                            EnrichmentService enrichmentService) {
         this.buildingRepository = buildingRepository;
         this.hostRepository = hostRepository;
         this.listingRepository = listingRepository;
         this.llmService = llmService;
+        this.enrichmentService = enrichmentService;
     }
 
     public DealScoutRunResponse runPipeline(DealScoutRunRequest request) {
@@ -130,16 +137,31 @@ public class DealScoutService {
 
         DealScoutContact contact = resolveContact(building);
 
-        DealScoutLlmService.DraftResult draftResult = llmService.draftEmail(
+        // Real-world enrichment step
+        contact = enrichmentService.enrichContact(contact, building);
+
+        boolean outreachReady = Boolean.TRUE.equals(contact.getContactVerified()) || allowUnverifiedDrafts;
+        String queueStatus = Boolean.TRUE.equals(contact.getContactVerified()) ? "REVIEW_REQUIRED" : "RESEARCH_REQUIRED";
+
+        DealScoutLlmService.DraftResult draftResult;
+        if (outreachReady) {
+            draftResult = llmService.draftEmail(
                 new DealScoutLlmService.EmailContext(
-                        building.getName(),
-                        building.getAddress(),
-                        contact.getContactName(),
-                        contact.getCompanyName(),
-                        euiDropPct,
-                        estimatedSavings
+                    building.getName(),
+                    building.getAddress(),
+                    contact.getContactName(),
+                    contact.getCompanyName(),
+                    euiDropPct,
+                    estimatedSavings
                 )
-        );
+            );
+        } else {
+            draftResult = new DealScoutLlmService.DraftResult(
+                "Manual research required: verify contact for " + building.getName(),
+                "Contact is not verified yet. Please validate company owner/operator, direct CRE contact, and deliverable email before outreach.\n\n" +
+                    "Verification details: " + (contact.getVerificationNotes() == null ? "n/a" : contact.getVerificationNotes())
+            );
+        }
 
         return DealOpportunityDraft.builder()
                 .buildingId(building.getId())
@@ -152,7 +174,7 @@ public class DealScoutService {
                 .contact(contact)
                 .emailSubject(draftResult.subject)
                 .emailBody(draftResult.body)
-                .queueStatus("REVIEW_REQUIRED")
+                .queueStatus(queueStatus)
                 .build();
     }
 
@@ -200,6 +222,10 @@ public class DealScoutService {
                     .website("https://www." + safeDomain(best.getCompanyName()))
                     .sourceNotes("Resolved from existing host record + heuristic LinkedIn/company URL")
                     .confidence(0.85)
+                    .sourceCount(1)
+                    .emailVerified(false)
+                    .contactVerified(false)
+                    .verificationNotes("Pending enrichment verification")
                     .build();
         }
 
@@ -212,6 +238,10 @@ public class DealScoutService {
                 .website("https://www." + safeDomain(building.getName()))
                 .sourceNotes("No host record found. Placeholder generated for manual verification.")
                 .confidence(0.45)
+                .sourceCount(1)
+                .emailVerified(false)
+                .contactVerified(false)
+                .verificationNotes("Placeholder contact; verification required")
                 .build();
     }
 

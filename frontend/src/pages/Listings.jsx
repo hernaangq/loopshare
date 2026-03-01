@@ -98,7 +98,7 @@ export default function Listings() {
       <div className="container-wide py-8">
         <div className="listings-header">
           <p className="text-sm text-muted">
-            {loading ? 'Loading...' : `${filtered.length} desk${filtered.length !== 1 ? 's' : ''} available in Chicago Loop`}
+            {loading ? 'Loading...' : `${filtered.length} listing${filtered.length !== 1 ? 's' : ''} available in Chicago Loop`}
           </p>
         </div>
         <div className="grid-listings mt-4">

@@ -6,11 +6,11 @@ This module adds an agentic outreach pipeline at `/api/deal-scout`.
 
 1. Ingests benchmark rows (or generates synthetic defaults if omitted)
 2. Scores underutilized buildings using occupancy + EUI trend + desk-share signal
-3. Resolves likely CRE contact from existing host records (with placeholders when missing)
-4. Drafts personalized outreach email per building using:
-   - `mock` template mode (default)
-   - `openai` compatible chat-completions mode (configurable)
-5. Queues drafts for manual review (`REVIEW_REQUIRED`)
+3. Resolves initial contact from host records
+4. Enriches contact data from multiple web sources
+5. Applies reliability gates (confidence + email verification + source count)
+6. Drafts outreach only when contact quality is verified
+7. Queues records for manual review
 
 ## API
 
@@ -26,20 +26,11 @@ Example payload:
   "dryRun": true,
   "benchmarks": [
     {
-      "buildingId": 1,
-      "reportingYear": 2025,
-      "euiCurrent": 72.4,
-      "euiPrior": 91.0,
-      "occupancyRatePct": 58.0,
-      "source": "cook-county-benchmarking"
-    },
-    {
       "buildingId": 2,
-      "reportingYear": 2025,
-      "euiCurrent": 69.1,
-      "euiPrior": 85.6,
-      "occupancyRatePct": 54.0,
-      "source": "cook-county-benchmarking"
+      "reportingYear": 2023,
+      "euiCurrent": 67.4,
+      "euiPrior": 73.1,
+      "source": "City of Chicago xq83-jr8c"
     }
   ]
 }
@@ -53,42 +44,51 @@ Example payload:
 
 `GET /api/deal-scout/runs/{runId}`
 
-### Review queue status
+### Update queue status
 
 `PATCH /api/deal-scout/runs/{runId}/opportunities/{buildingId}/status?status=APPROVED`
 
 Recommended statuses:
-- `REVIEW_REQUIRED`
+- `RESEARCH_REQUIRED` (not verified enough for outreach)
+- `REVIEW_REQUIRED` (draft is ready for human approval)
 - `APPROVED`
 - `REJECTED`
 - `SENT`
 
+## Reliability rules
+
+The pipeline marks `contact.contactVerified=true` only when:
+- Confidence meets minimum threshold
+- Company and contact name are present
+- At least 2 enrichment sources contributed
+- Email is valid format and (if enabled) domain has MX record
+
+If verification fails, Deal Scout does not generate outreach copy and sets queue status to `RESEARCH_REQUIRED`.
+
 ## LLM configuration
 
-In `application.properties`:
-
 ```properties
-dealscout.llm.provider=mock
-dealscout.llm.base-url=https://api.openai.com
+dealscout.llm.provider=ollama
+dealscout.llm.base-url=http://localhost:11434
+dealscout.llm.ollama-model=llama3
 dealscout.llm.model=gpt-4o-mini
 dealscout.llm.api-key=
 ```
 
-To use OpenAI-compatible mode:
+## Enrichment configuration
 
-1. Set `dealscout.llm.provider=openai`
-2. Set `dealscout.llm.api-key` to your key (or inject via environment)
-3. Optional: switch base URL/model to your preferred provider endpoint
+```properties
+dealscout.enrichment.enabled=true
+dealscout.enrichment.min-confidence=0.8
+dealscout.enrichment.require-verified-email=true
+```
 
-If LLM calls fail, the service automatically falls back to template drafting.
+## Legal and compliance notes
 
-## Notes on public record scraping
-
-This scaffold intentionally keeps enrichment deterministic/safe by using current host records + placeholders.
-For production scraping/enrichment (Cook County Assessor, LinkedIn, company websites), implement a separate enrichment service with:
-
-- source-specific connectors
-- robots.txt and ToS compliance checks
-- caching + retry/backoff
-- confidence scoring and provenance per field
-- human approval before any send action
+Web scraping may violate site terms or legal requirements depending on source and jurisdiction.
+Before production use:
+- Check ToS and robots.txt for each source
+- Prefer official APIs where available
+- Apply rate limiting and retry backoff
+- Keep provenance for each enriched field
+- Require human approval before any send

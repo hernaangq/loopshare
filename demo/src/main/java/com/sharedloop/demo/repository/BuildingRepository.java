@@ -12,4 +12,8 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     List<Building> findByNeighborhood(String neighborhood);
 
     List<Building> findByNameContainingIgnoreCase(String name);
+
+    boolean existsByAddressIgnoreCase(String address);
+
+    boolean existsByNameIgnoreCaseAndAddressIgnoreCase(String name, String address);
 }
