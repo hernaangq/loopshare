@@ -5,6 +5,16 @@
   overflow: hidden;
 }
 
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ls-black);
+  opacity: 0.36;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .hero-bg {
   position: absolute;
   inset: 0;
@@ -31,11 +41,8 @@
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #FFD56B, #FFFFFF 60%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
+  color: var(--ls-white);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
 }
 
 .hero-highlight {
@@ -45,7 +52,8 @@
 
 .hero-subtitle {
   font-size: 18px;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--ls-white);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
   margin: 14px auto 0;
   max-width: 680px;
 }
