@@ -151,8 +151,8 @@ body {
   transition: background 0.2s;
 }
 
-.navbar-link:hover,
-.navbar-link.active {
+.navbar-link:not(.navbar-ai-btn):not(.navbar-find-host-btn):not(.navbar-host-btn):hover,
+.navbar-link:not(.navbar-ai-btn):not(.navbar-find-host-btn):not(.navbar-host-btn).active {
   background: var(--ls-gray-50);
 }
 
@@ -266,6 +266,13 @@ body {
   box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
 }
 
+.navbar-ai-btn:active {
+  background: linear-gradient(135deg, #a855f7, #d8b4fe);
+  color: #fff !important;
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+}
+
 /* Host your space button */
 .navbar-host-btn {
   background: var(--ls-black);
@@ -298,11 +305,19 @@ body {
   transition: all 0.2s ease;
 }
 
-.navbar-find-host-btn:hover {
+.navbar-find-host-btn:hover,
+.navbar-find-host-btn.active {
   background: linear-gradient(135deg, #1269c4, #55c5f0);
   color: #fff !important;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4);
+}
+
+.navbar-find-host-btn:active {
+  background: linear-gradient(135deg, #2f7fd3, #7ad4f3);
+  color: #fff !important;
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.3);
 }
 
 /* Live Monitor button */

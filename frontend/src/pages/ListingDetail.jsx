@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { MapPin, Users, DollarSign, Star, Building2, Wifi, Coffee, Car, Shield, Calendar, ArrowLeft, Mail } from 'lucide-react'
+import { MapPin, Users, DollarSign, Star, Building2, Wifi, Coffee, Car, Shield, Calendar, ArrowLeft } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
-import { listings as listingsApi, bookings as bookingsApi, startups as startupsApi, dealScout as dealScoutApi } from '../services/api'
+import { listings as listingsApi, bookings as bookingsApi } from '../services/api'
 import DayChips from '../components/DayChips'
 import { useAuth } from '../context/AuthContext'
 import 'leaflet/dist/leaflet.css'
@@ -56,7 +56,6 @@ export default function ListingDetail() {
   const [listing, setListing] = useState(null)
   const [bookingForm, setBookingForm] = useState({ desks: 1, startDate: '', endDate: '' })
   const [bookingSuccess, setBookingSuccess] = useState(false)
-  const [aiGenerating, setAiGenerating] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -106,59 +105,6 @@ export default function ListingDetail() {
       setBookingSuccess(true)
     } catch (err) {
       alert('Booking failed: ' + err.message)
-    }
-  }
-
-  const handleAiProposal = async () => {
-    if (!listing?.building?.id) {
-      alert('Building data not available for this listing.')
-      return
-    }
-
-    const mockEmailFromName = (name) => {
-      const normalized = (name || 'contact')
-        .toLowerCase()
-        .replace(/&/g, ' and ')
-        .replace(/[^a-z0-9]+/g, '.')
-        .replace(/^\.+|\.+$/g, '')
-      return `${normalized || 'contact'}@mock-loopshare.com`
-    }
-
-    setAiGenerating(true)
-    try {
-      const run = await dealScoutApi.run({
-        topN: 1,
-        dryRun: false,
-        benchmarks: [
-          {
-            buildingId: listing.building.id,
-            reportingYear: new Date().getFullYear(),
-            source: 'ui-listing-detail-ai-proposal',
-          },
-        ],
-      })
-
-      const opportunity = (run.opportunities || []).find(o => o.buildingId === listing.building.id) || run.opportunities?.[0]
-      if (!opportunity) {
-        alert('AI agent did not return an outreach proposal for this building.')
-        return
-      }
-
-      const buildingName = listing?.building?.name || 'your building'
-      const fallbackContactName = opportunity.contact?.name || listing?.host?.companyName || buildingName
-      const to = opportunity.contact?.email || mockEmailFromName(fallbackContactName)
-      const subject = opportunity.emailSubject || `LoopShare proposal for ${buildingName}`
-      const body = opportunity.emailBody || `Hi,\n\nI have a proposal for ${buildingName}.\n\nBest,\nLoopShare`
-
-      window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-
-      if (run.runId && opportunity.buildingId) {
-        dealScoutApi.updateStatus(run.runId, opportunity.buildingId, 'SENT').catch(() => {})
-      }
-    } catch (err) {
-      alert('AI proposal failed: ' + err.message)
-    } finally {
-      setAiGenerating(false)
     }
   }
 
@@ -410,10 +356,6 @@ export default function ListingDetail() {
                 ? 'Sign in as space seeker to reserve desks.'
                 : "You won't be charged yet. Building owner confirmation required."}
             </p>
-
-            <button className="btn btn-outline mt-4" style={{ width: '100%' }} onClick={handleAiProposal} disabled={aiGenerating}>
-              <Mail size={16} /> {aiGenerating ? 'Generating AI draft...' : 'Generate AI email proposal'}
-            </button>
           </div>
         </div>
       </div>
