@@ -84,7 +84,7 @@ export default function Navbar() {
         <Link to="/" className="navbar-logo">
           <div className="loop-mark" aria-hidden="true">
             <div className="loop-mark-ring">
-              <Building2 size={14} />
+              <img src="/ICON.png" alt="LoopShare logo mark" />
             </div>
           </div>
           <span className="navbar-logo-text">

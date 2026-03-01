@@ -24,23 +24,23 @@
 .loop-mark {
   width: 38px;
   height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #0b5cab, #41b6e6);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 18px rgba(11, 92, 171, 0.28);
 }
 
 .loop-mark-ring {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.85);
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ls-white);
+}
+
+.loop-mark-ring img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .navbar-logo-text {
@@ -231,6 +231,7 @@
   .navbar-inner { height: 64px; }
   .navbar-logo-text { font-size: 18px; }
   .loop-mark { width: 34px; height: 34px; }
+  .loop-mark-ring { width: 34px; height: 34px; }
 }
 
 /* AI Match button */
