@@ -1,0 +1,462 @@
+/* ─── Hero ─── */
+.tax-hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: white;
+  padding: 64px 0 56px;
+}
+
+.tax-hero-content {
+  max-width: 640px;
+}
+
+.tax-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+}
+
+.tax-hero h1 {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.tax-hero p {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 12px;
+  line-height: 1.6;
+}
+
+.tax-hero strong {
+  color: #00e676;
+}
+
+/* ─── Layout ─── */
+.tax-layout {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 32px;
+  padding-top: 32px;
+  padding-bottom: 64px;
+  align-items: start;
+}
+
+/* ─── Cards ─── */
+.tax-card {
+  background: var(--ls-white);
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.tax-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* ─── Calculator Form ─── */
+.calc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.calc-field label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ls-gray-700);
+  margin-bottom: 8px;
+}
+
+.info-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ls-gray-400);
+  cursor: pointer;
+  display: inline-flex;
+}
+
+.info-btn:hover {
+  color: var(--ls-primary);
+}
+
+.calc-info {
+  font-size: 12px;
+  color: var(--ls-gray-500);
+  background: var(--ls-gray-50);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* Range Sliders */
+.calc-field input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--ls-gray-200);
+  border-radius: 3px;
+  outline: none;
+}
+
+.calc-field input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ls-primary);
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.calc-field input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ls-primary);
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.calc-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ls-gray-400);
+  margin-top: 4px;
+}
+
+.calc-value {
+  font-weight: 700;
+  color: var(--ls-primary);
+  font-size: 14px;
+}
+
+/* Day Buttons */
+.calc-day-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.calc-day-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--ls-gray-200);
+  background: var(--ls-white);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.calc-day-btn:hover {
+  border-color: var(--ls-gray-400);
+}
+
+.calc-day-btn.active {
+  border-color: var(--ls-primary);
+  background: var(--ls-primary);
+  color: white;
+}
+
+/* Number Input */
+.calc-field .input-field {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 15px;
+}
+
+/* ─── Facts Card ─── */
+.tax-facts-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.tax-facts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tax-facts-list li {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ls-gray-700);
+}
+
+.tax-facts-list li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.text-success { color: #16a34a; }
+.text-warning { color: #d97706; }
+.text-info { color: #2563eb; }
+
+/* ─── Total Card ─── */
+.tax-total-card {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  color: white;
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.tax-total-label {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.tax-total-amount {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #00e676, #00bfa5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tax-total-sub {
+  font-size: 14px;
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+/* ─── Breakdown ─── */
+.tax-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  transition: background 0.15s;
+}
+
+.breakdown-row.highlight {
+  background: #FFF5F5;
+  border: 1px solid rgba(255, 56, 92, 0.15);
+}
+
+.breakdown-row.total {
+  background: var(--ls-gray-50);
+}
+
+.breakdown-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.breakdown-icon.revenue { background: #E8F5E9; color: #2e7d32; }
+.breakdown-icon.tax { background: #FFF3E0; color: #e65100; }
+.breakdown-icon.social { background: #E3F2FD; color: #1565c0; }
+.breakdown-icon.total-icon { background: var(--ls-gray-200); color: var(--ls-gray-700); }
+
+.breakdown-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.breakdown-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ls-gray-900);
+}
+
+.breakdown-desc {
+  font-size: 12px;
+  color: var(--ls-gray-500);
+  margin-top: 2px;
+}
+
+.breakdown-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ls-gray-900);
+  flex-shrink: 0;
+}
+
+.breakdown-divider {
+  height: 1px;
+  background: var(--ls-gray-200);
+  margin: 4px 0;
+}
+
+/* ─── Formula ─── */
+.tax-formula {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formula-block {
+  background: var(--ls-gray-50);
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+}
+
+.formula-text {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: 'Georgia', serif;
+  color: var(--ls-gray-900);
+  letter-spacing: 0.01em;
+}
+
+.formula-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--ls-gray-600);
+}
+
+.legend-var {
+  font-family: 'Georgia', serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ls-gray-900);
+  min-width: 60px;
+  text-align: right;
+}
+
+/* ─── Metrics Grid ─── */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.metric-box {
+  background: var(--ls-gray-50);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ls-gray-900);
+}
+
+.metric-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ls-gray-500);
+  margin-top: 4px;
+}
+
+/* ─── CTA ─── */
+.tax-cta-card {
+  background: linear-gradient(135deg, #FFF5F5, #FFF0F6);
+  border-color: rgba(255, 56, 92, 0.15);
+  text-align: center;
+}
+
+.tax-cta-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.tax-cta-card p {
+  color: var(--ls-gray-500);
+  margin: 8px 0 20px;
+}
+
+.tax-cta-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ─── Disclaimer ─── */
+.tax-disclaimer {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  font-size: 11px;
+  color: var(--ls-gray-500);
+  line-height: 1.6;
+  background: var(--ls-gray-50);
+  border-radius: var(--radius-md);
+}
+
+.tax-disclaimer svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--ls-gray-400);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .tax-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .tax-hero h1 { font-size: 28px; }
+  .tax-hero { padding: 40px 0 36px; }
+  .tax-total-amount { font-size: 36px; }
+  .metrics-grid { grid-template-columns: 1fr 1fr; }
+  .formula-text { font-size: 16px; }
+}

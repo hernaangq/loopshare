@@ -7,6 +7,7 @@ import ListingDetail from './pages/ListingDetail'
 import MapExplore from './pages/MapExplore'
 import HostDashboard from './pages/HostDashboard'
 import StartupDashboard from './pages/StartupDashboard'
+import TaxEstimator from './pages/TaxEstimator'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/map" element={<MapExplore />} />
           <Route path="/host" element={<HostDashboard />} />
           <Route path="/startup" element={<StartupDashboard />} />
+          <Route path="/taxes" element={<TaxEstimator />} />
         </Routes>
       </main>
       <Footer />
