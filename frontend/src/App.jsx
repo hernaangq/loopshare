@@ -16,6 +16,7 @@ import Onboarding from './pages/Onboarding'
 import Results from './pages/Results'
 import BuildingIntel from './pages/BuildingIntel'
 import LoopMonitor from './pages/LoopMonitor'
+import FindNewHost from './pages/FindNewHost'
 
 export default function App() {
   return (
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="/results" element={<Results />} />
           <Route path="/intel/:buildingId" element={<BuildingIntel />} />
           <Route path="/monitor" element={<LoopMonitor />} />
+          <Route path="/find-host" element={<FindNewHost />} />
         </Routes>
       </main>
       <Footer />

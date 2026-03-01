@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Search, Globe, Menu, User, Building2 } from 'lucide-react'
+import { Search, Globe, Menu, User, Building2, Radar, Sparkles } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { LOOP_ZONES, SEARCH_DAYS, SEARCH_STORAGE_KEY } from '../constants/searchOptions'
@@ -142,7 +142,13 @@ export default function Navbar() {
             to="/onboarding"
             className={`navbar-link navbar-ai-btn ${location.pathname === '/onboarding' || location.pathname === '/results' ? 'active' : ''}`}
           >
-            ✦ AI Match
+            <Sparkles size={14} /> AI Match
+          </Link>
+          <Link
+            to="/find-host"
+            className={`navbar-link navbar-find-host-btn ${location.pathname === '/find-host' ? 'active' : ''}`}
+          >
+            <Radar size={14} /> Find New Host
           </Link>
           <Link
             to="/host"

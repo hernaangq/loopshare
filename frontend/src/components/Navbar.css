@@ -251,6 +251,24 @@
   color: #fff !important;
 }
 
+/* Find New Host button */
+.navbar-find-host-btn {
+  background: linear-gradient(135deg, #0b5cab, #41b6e6);
+  color: #fff !important;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.navbar-find-host-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  color: #fff !important;
+}
+
 /* Live Monitor button */
 .navbar-monitor-btn {
   background: #161b22;
