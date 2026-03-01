@@ -61,8 +61,6 @@ export default function App() {
               </ProtectedRoute>
             )}
           />
-          <Route path="/host" element={<HostDashboard />} />
-          <Route path="/startup" element={<StartupDashboard />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/results" element={<Results />} />
           <Route path="/intel/:buildingId" element={<BuildingIntel />} />
