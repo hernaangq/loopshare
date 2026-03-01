@@ -5,10 +5,10 @@ import { Building2, Users, DollarSign, Briefcase, Loader2 } from 'lucide-react'
 import './Onboarding.css'
 
 const AGENT_LABELS = [
-  'Scanning Loop buildings...',
+  'Scanning Chicago Loop buildings...',
   'Analyzing energy data...',
-  'Calculating risk scores...',
-  'Finding your matches...',
+  'Evaluating risk scores...',
+  'Finding your best matches...',
 ]
 
 function AgentLoader() {
@@ -29,10 +29,11 @@ function AgentLoader() {
   return (
     <div className="agent-fullscreen">
       <div className="loader-center">
-        <div className="loader-orbit">
-          <div className="loader-dot" />
-          <div className="loader-dot" />
-          <div className="loader-dot" />
+        <div className="loader-grid">
+          <div className="loader-circle" style={{ animationDelay: '0s' }} />
+          <div className="loader-circle" style={{ animationDelay: '0.2s' }} />
+          <div className="loader-circle" style={{ animationDelay: '0.4s' }} />
+          <div className="loader-circle" style={{ animationDelay: '0.6s' }} />
         </div>
         <p className="loader-label" style={{ opacity: fading ? 0 : 1 }}>
           {AGENT_LABELS[idx]}
