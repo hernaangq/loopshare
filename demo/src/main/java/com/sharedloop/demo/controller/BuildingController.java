@@ -1,5 +1,4 @@
 package com.sharedloop.demo.controller;
-
 import com.sharedloop.demo.model.Building;
 import com.sharedloop.demo.repository.BuildingRepository;
 import io.swagger.v3.oas.annotations.Operation;

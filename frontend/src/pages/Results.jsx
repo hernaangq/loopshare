@@ -126,14 +126,8 @@ function MatchCard({ match, rank }) {
       </div>
 
       <div className="match-actions">
-        <Link
-          to={`/intel/${match.building_id}?name=${encodeURIComponent(match.building_name || '')}&address=${encodeURIComponent(match.building_address || '')}`}
-          className="btn-secondary btn-sm"
-        >
-          <BarChart2 size={15} /> Building Intel
-        </Link>
         <button className="expand-btn" onClick={() => setExpanded(!expanded)}>
-          {expanded ? <><ChevronUp size={15} /> Hide AI Content</> : <><ChevronDown size={15} /> View Email &amp; Lease</>}
+          {expanded ? <><ChevronUp size={15} /> Hide AI Content</> : <><ChevronDown size={15} /> View Email</>}
         </button>
         <button className="btn-primary btn-sm" onClick={handleApprove}>
           <CheckCircle size={15} /> Approve &amp; Send
@@ -145,10 +139,6 @@ function MatchCard({ match, rank }) {
           <div className="outreach-block">
             <h4>📧 Generated Outreach Email</h4>
             <pre>{typeof out.email === 'string' ? out.email : 'No email generated.'}</pre>
-          </div>
-          <div className="outreach-block">
-            <h4>📄 Lease Draft</h4>
-            <pre>{typeof out.lease_draft === 'string' ? out.lease_draft : 'No lease draft generated.'}</pre>
           </div>
         </div>
       )}

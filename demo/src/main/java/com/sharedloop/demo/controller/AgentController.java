@@ -1,10 +1,15 @@
 package com.sharedloop.demo.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedloop.demo.service.*;
+import com.sharedloop.demo.service.OrchestratorService.StreamLogger;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * REST controller exposing all AI agent endpoints.
@@ -14,22 +19,28 @@ import java.util.Map;
 @RequestMapping("/api")
 public class AgentController {
 
-    private final AnalystAgent      analyst;
-    private final MatcherAgent      matcher;
-    private final RiskAgent         risk;
-    private final OutreachAgent     outreach;
+    private final AnalystAgent        analyst;
+    private final MatcherAgent        matcher;
+    private final RiskAgent           risk;
+    private final OutreachAgent       outreach;
     private final OrchestratorService orchestrator;
+    private final ExecutorService     executor;
+    private final ObjectMapper        objectMapper;
 
     public AgentController(AnalystAgent analyst,
                             MatcherAgent matcher,
                             RiskAgent risk,
                             OutreachAgent outreach,
-                            OrchestratorService orchestrator) {
+                            OrchestratorService orchestrator,
+                            ExecutorService executor,
+                            ObjectMapper objectMapper) {
         this.analyst      = analyst;
         this.matcher      = matcher;
         this.risk         = risk;
         this.outreach     = outreach;
         this.orchestrator = orchestrator;
+        this.executor     = executor;
+        this.objectMapper = objectMapper;
     }
 
     /**

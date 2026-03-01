@@ -68,7 +68,7 @@ public class MatcherAgent {
             entry.put("description", listing.getDescription());
             entry.put("match_score", score);
 
-            // Estimated cost & CO2
+            /* Estimated cost & CO2
             List<String> startupDays = (List<String>) profile.getOrDefault("days", Collections.emptyList());
             int daysPerMonth = startupDays.size() * 4;
             int people = toInt(profile.get("people"), 1);
@@ -83,7 +83,7 @@ public class MatcherAgent {
             // 5000 sqft proxy for shared space, 0.000053 metric tons CO2e per kBtu
             double co2 = euiSaving * 5000 * 0.000053;
             entry.put("co2_reduction_tons_year", Math.round(co2 * 10.0) / 10.0);
-
+                */
             scored.add(entry);
         }
 

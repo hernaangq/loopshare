@@ -35,18 +35,13 @@ public class OutreachAgent {
         String systemPrompt =
                 "You are a professional business development writer for SharedLoop, " +
                 "a marketplace that connects Chicago Loop corporations with startups needing coworking space. " +
-                "Generate two documents based on the provided data.\n\n" +
+                "Generate a document based on the provided data.\n\n" +
                 "Return ONLY a valid JSON object (no markdown) with exactly two fields:\n" +
                 "1. \"email\": A professional but warm outreach email from SharedLoop to the corporation, " +
                 "   explaining the startup's interest and the financial opportunity. " +
                 "   Include real numbers: EUI score, estimated monthly revenue from the deal, " +
                 "   estimated tax benefit under Illinois Enterprise Zone Act, CO2 reduction. " +
-                "   Keep it under 300 words.\n" +
-                "2. \"lease_draft\": A one-page desk-sharing lease agreement including: " +
-                "   parties (corporation and startup names), space description (floor, desks), " +
-                "   schedule (days/hours: 9am-6pm on selected days), price per desk per day, " +
-                "   total monthly cost, duration (6 months with 30-day exit clause), " +
-                "   and standard liability waiver language. Include placeholders for signatures.";
+                "   Keep it under 300 words.\n";
 
         String userMessage;
         try {
@@ -68,7 +63,6 @@ public class OutreachAgent {
         } catch (Exception e) {
             Map<String, Object> fallback = new LinkedHashMap<>();
             fallback.put("email", extractSection(result, "email"));
-            fallback.put("lease_draft", extractSection(result, "lease_draft"));
             return fallback;
         }
     }

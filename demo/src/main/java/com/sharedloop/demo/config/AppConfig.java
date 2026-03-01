@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Configuration
 public class AppConfig {
@@ -16,5 +18,11 @@ public class AppConfig {
                 .setConnectTimeout(Duration.ofSeconds(30))
                 .setReadTimeout(Duration.ofSeconds(120))
                 .build();
+    }
+
+    /** Thread pool for running long SSE pipeline tasks off the request thread. */
+    @Bean
+    public ExecutorService agentExecutor() {
+        return Executors.newCachedThreadPool();
     }
 }

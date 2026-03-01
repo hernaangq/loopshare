@@ -10,6 +10,7 @@ import StartupDashboard from './pages/StartupDashboard'
 import Onboarding from './pages/Onboarding'
 import Results from './pages/Results'
 import BuildingIntel from './pages/BuildingIntel'
+import LoopMonitor from './pages/LoopMonitor'
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/results" element={<Results />} />
           <Route path="/intel/:buildingId" element={<BuildingIntel />} />
+          <Route path="/monitor" element={<LoopMonitor />} />
         </Routes>
       </main>
       <Footer />
