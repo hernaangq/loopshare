@@ -122,10 +122,12 @@ public class DealScoutService {
         double deskSharePct = percentage(desksShared, building.getTotalDesks());
 
         double occupancyRate = input.getOccupancyRatePct() != null
-                ? input.getOccupancyRatePct()
-                : Math.max(15.0, Math.min(95.0, deskSharePct));
+            ? input.getOccupancyRatePct()
+            : Math.max(15.0, Math.min(95.0, deskSharePct));
 
-        double euiDropPct = calculateEuiDropPct(input.getEuiPrior(), input.getEuiCurrent());
+        double euiPrior = resolveEuiPrior(input.getEuiPrior(), building);
+        double euiCurrent = resolveEuiCurrent(input.getEuiCurrent(), euiPrior, building);
+        double euiDropPct = calculateEuiDropPct(euiPrior, euiCurrent);
 
         double underutilizationScore = round(
                 (0.55 * (100.0 - occupancyRate)) +
@@ -191,8 +193,8 @@ public class DealScoutService {
                     .sum();
 
             double occupancyRate = totalDesks > 0 ? Math.min(95.0, Math.max(20.0, (listedDesks * 100.0) / totalDesks)) : 50.0;
-            double euiPrior = 90.0 + (building.getId() % 20);
-            double euiCurrent = Math.max(55.0, euiPrior - (5.0 + (building.getId() % 15)));
+            double euiPrior = syntheticEuiPrior(building);
+            double euiCurrent = syntheticEuiCurrent(building, euiPrior);
 
             EnergyBenchmarkInput row = new EnergyBenchmarkInput();
             row.setBuildingId(building.getId());
@@ -250,6 +252,30 @@ public class DealScoutService {
             return 0.0;
         }
         return ((prior - current) / prior) * 100.0;
+    }
+
+    private double resolveEuiPrior(Double providedPrior, Building building) {
+        if (providedPrior != null && providedPrior > 0) {
+            return providedPrior;
+        }
+        return syntheticEuiPrior(building);
+    }
+
+    private double resolveEuiCurrent(Double providedCurrent, double resolvedPrior, Building building) {
+        if (providedCurrent != null && providedCurrent >= 0) {
+            return providedCurrent;
+        }
+        return syntheticEuiCurrent(building, resolvedPrior);
+    }
+
+    private double syntheticEuiPrior(Building building) {
+        long id = building.getId() == null ? 1L : building.getId();
+        return 90.0 + (id % 20);
+    }
+
+    private double syntheticEuiCurrent(Building building, double euiPrior) {
+        long id = building.getId() == null ? 1L : building.getId();
+        return Math.max(55.0, euiPrior - (5.0 + (id % 15)));
     }
 
     private double percentage(Integer part, Integer whole) {

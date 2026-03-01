@@ -115,6 +115,15 @@ export default function ListingDetail() {
       return
     }
 
+    const mockEmailFromName = (name) => {
+      const normalized = (name || 'contact')
+        .toLowerCase()
+        .replace(/&/g, ' and ')
+        .replace(/[^a-z0-9]+/g, '.')
+        .replace(/^\.+|\.+$/g, '')
+      return `${normalized || 'contact'}@mock-loopshare.com`
+    }
+
     setAiGenerating(true)
     try {
       const run = await dealScoutApi.run({
@@ -135,14 +144,11 @@ export default function ListingDetail() {
         return
       }
 
-      const to = opportunity.contact?.email || ''
-      const subject = opportunity.emailSubject || `LoopShare proposal for ${building.name}`
-      const body = opportunity.emailBody || `Hi,\n\nI have a proposal for ${building.name}.\n\nBest,\nLoopShare`
-
-      if (!to) {
-        alert('Proposal generated, but no contact email was found. Check Deal Scout runs for the draft.')
-        return
-      }
+      const buildingName = listing?.building?.name || 'your building'
+      const fallbackContactName = opportunity.contact?.name || listing?.host?.companyName || buildingName
+      const to = opportunity.contact?.email || mockEmailFromName(fallbackContactName)
+      const subject = opportunity.emailSubject || `LoopShare proposal for ${buildingName}`
+      const body = opportunity.emailBody || `Hi,\n\nI have a proposal for ${buildingName}.\n\nBest,\nLoopShare`
 
       window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 
