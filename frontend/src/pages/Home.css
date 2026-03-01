@@ -31,12 +31,16 @@
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.03em;
-  color: var(--ls-white);
+  background: linear-gradient(135deg, #FFD56B, #FFFFFF 60%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
 }
 
 .hero-highlight {
   color: var(--ls-primary-light);
-  text-shadow: 0 1px 6px rgba(11, 92, 171, 0.35);
+  text-shadow: 0 1px 6px rgb(255, 255, 255);
 }
 
 .hero-subtitle {

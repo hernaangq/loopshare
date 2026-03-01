@@ -64,7 +64,7 @@ export default function Home() {
         <div className="hero-content container">
           <div className="hero-simple">
             <h1 className="hero-title">
-              Shared desks in <span className="hero-highlight">Chicago Loop</span>
+              Shared desks in Chicago Loop
             </h1>
             <p className="hero-subtitle">
               Use underused vacant office space and bring life back to the Loop.
