@@ -178,10 +178,11 @@
   margin: 0;
 }
 
-/* ── Agent loader — in-flow, navbar stays visible ─────────────────────── */
+/* ── Loading screen ──────────────────────────────────────────────────── */
 .agent-fullscreen {
   position: relative;
-  min-height: calc(100vh - 80px); /* 80px = navbar height */
+  min-height: calc(100vh - 92px);
+  background: var(--ls-white);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -193,64 +194,53 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 36px;
+  gap: 48px;
 }
 
-/* ── Triangle orbit ──────────────────────────────────────────────────── */
-.loader-orbit {
-  position: relative;
-  width: 96px;
-  height: 96px;
-  animation: loaderRotate 3s ease-in-out infinite;
+/* ── 2×2 breathing dot grid ──────────────────────────────────────────── */
+.loader-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 14px);
+  grid-template-rows: repeat(2, 14px);
+  gap: 10px;
 }
 
-.loader-dot {
-  position: absolute;
-  width: 8px;
-  height: 8px;
+.loader-circle {
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: var(--ls-primary);
-  animation: loaderPulse 3s ease-in-out infinite;
+  animation: dotBreath 1.2s ease-in-out infinite;
 }
 
-.loader-dot:nth-child(1) { top: 4px;    left: 44px;  animation-delay: 0s; }
-.loader-dot:nth-child(2) { bottom: 4px; left: 10px;  animation-delay: 1s; }
-.loader-dot:nth-child(3) { bottom: 4px; right: 10px; animation-delay: 2s; }
-
-@keyframes loaderRotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-@keyframes loaderPulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.25; }
+@keyframes dotBreath {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%       { transform: scale(1.6); opacity: 0.3; }
 }
 
 /* ── Cycling label ───────────────────────────────────────────────────── */
 .loader-label {
   font-family: var(--font-family);
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  color: var(--ls-gray-300);
+  font-size: 14px;
+  color: var(--ls-gray-500);
   margin: 0;
   transition: opacity 0.4s ease;
 }
 
-/* ── Progress bar ────────────────────────────────────────────────────── */
+/* ── Progress bar (fixed, flat, full-width) ──────────────────────────── */
 .loader-bar-track {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 2px;
-  background: var(--ls-gray-100);
+  height: 3px;
+  background: transparent;
 }
 
 .loader-bar-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(to right, var(--ls-primary), var(--ls-primary-dark));
+  background: var(--ls-primary);
   animation: loaderProgress 8s ease-out forwards;
 }
 

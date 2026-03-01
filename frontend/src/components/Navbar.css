@@ -1,16 +1,23 @@
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1200;
   background: var(--ls-white);
   border-bottom: 1px solid var(--ls-gray-200);
+  transition: transform 0.3s ease;
+}
+
+body {
+  padding-top: 92px;
 }
 
 .navbar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
+  height: 92px;
 }
 
 /* Logo */
@@ -56,9 +63,11 @@
 
 /* Search Pill */
 .navbar-search {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   justify-content: center;
+  overflow: hidden;
 }
 
 .search-pill {
@@ -84,9 +93,10 @@
   background: transparent;
   font-size: 14px;
   font-weight: 600;
-  min-width: 130px;
+  min-width: 80px;
+  width: auto;
   color: var(--ls-black);
-  padding: 0 16px;
+  padding: 0 14px;
 }
 
 .search-pill-select {
@@ -99,7 +109,7 @@
 }
 
 .search-pill-section {
-  padding: 0 16px;
+  padding: 0 12px;
 }
 
 .search-pill-divider {
@@ -128,8 +138,9 @@
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
+  margin-left: 16px;
 }
 
 .navbar-link {
@@ -228,46 +239,70 @@
 }
 
 @media (max-width: 768px) {
-  .navbar-inner { height: 64px; }
+  .navbar-inner { height: 72px; }
   .navbar-logo-text { font-size: 18px; }
   .loop-mark { width: 34px; height: 34px; }
   .loop-mark-ring { width: 34px; height: 34px; }
+  body { padding-top: 72px; }
 }
 
 /* AI Match button */
 .navbar-ai-btn {
   background: linear-gradient(135deg, #7c3aed, #a78bfa);
   color: #fff !important;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
   border: none;
-  transition: opacity 0.15s, transform 0.15s;
+  transition: all 0.2s ease;
 }
 
 .navbar-ai-btn:hover,
 .navbar-ai-btn.active {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #9333ea, #c084fc);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
+}
+
+/* Host your space button */
+.navbar-host-btn {
+  background: var(--ls-black);
+  color: #fff !important;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.navbar-host-btn:hover,
+.navbar-host-btn.active {
+  background: #3a3a3a;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 /* Find New Host button */
 .navbar-find-host-btn {
   background: linear-gradient(135deg, #0b5cab, #41b6e6);
   color: #fff !important;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.01em;
-  transition: opacity 0.15s, transform 0.15s;
+  transition: all 0.2s ease;
 }
 
 .navbar-find-host-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #1269c4, #55c5f0);
   color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4);
 }
 
 /* Live Monitor button */
