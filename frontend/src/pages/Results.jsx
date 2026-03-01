@@ -246,19 +246,6 @@ function MatchCard({ match, rank }) {
         </div>
       </div>
 
-      {match.match_explanation && (
-        <div className="match-explanation">{match.match_explanation}</div>
-      )}
-
-      <div className="match-meta">
-        {match.host_company   && <span>🏢 {match.host_company}</span>}
-        {match.days_available && <span>🗓️ {match.days_available.replace(/,/g, ', ')}</span>}
-        {match.desks_available != null && (
-          <span>💺 {match.desks_available} desks · ${match.price_per_desk_per_day}/desk/day</span>
-        )}
-        {match.floor_number   && <span>📐 Floor {match.floor_number}</span>}
-      </div>
-
       <div className="match-actions">
         <button className="btn-primary btn-sm" onClick={handleAiProposal} disabled={aiGenerating}>
           <Mail size={15} /> {aiGenerating ? 'Generating AI draft...' : 'Generate AI email proposal'}

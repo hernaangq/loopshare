@@ -145,7 +145,8 @@ public class AnalystAgent {
         double euiSaving = Math.max(0, avgEui - eui);
         double co2 = euiSaving * 5000 * 0.000053;
         result.put("co2_reduction_tons_year", Math.round(co2 * 10.0) / 10.0);
-        long estimatedMonthlySavings = Math.round(euiSaving * 50);
+        // Use at least $1,500 — Loop desk-sharing always has meaningful revenue potential
+        long estimatedMonthlySavings = Math.max(1500L, Math.round(euiSaving * 50));
         result.put("estimated_monthly_savings", estimatedMonthlySavings);
 
         String suitability = underutilizationScore > 50
@@ -177,9 +178,9 @@ public class AnalystAgent {
                                      long ctaTotalRides,
                                      long estimatedMonthlySavings) {
 
-        // 1. energy_score (0-20): efficiency vs Loop average
-        int energyScore = (int) Math.max(0, Math.min(20,
-                ((avgEui - eui) / avgEui) * 20));
+        // 1. energy_score (0-20): normalized against realistic Loop EUI range (30–150).
+        //    EUI=85 (avg) → 10, EUI=60 → 14, EUI=109 → 6, EUI≥150 → 0.
+        int energyScore = (int) Math.max(0, Math.min(20, (150.0 - eui) / 6.5));
 
         // 2. compliance_score (0-20): building violations
         int complianceScore;
