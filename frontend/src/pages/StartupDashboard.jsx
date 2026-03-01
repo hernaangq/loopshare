@@ -1,24 +1,46 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Rocket, Calendar, Users, DollarSign, Search, MapPin, Building2 } from 'lucide-react'
+import { Rocket, Calendar, Users, DollarSign, Search, Building2, Compass, UserCircle2 } from 'lucide-react'
 import { startups as startupsApi, bookings as bookingsApi, listings as listingsApi } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import DayChips from '../components/DayChips'
 import ListingCard from '../components/ListingCard'
 import './Dashboard.css'
 
 export default function StartupDashboard() {
-  const [startupsList, setStartupsList] = useState([])
+  const { session } = useAuth()
   const [selectedStartup, setSelectedStartup] = useState(null)
   const [myBookings, setMyBookings] = useState([])
   const [recommended, setRecommended] = useState([])
 
   useEffect(() => {
-    startupsApi.getAll().then(setStartupsList)
-  }, [])
+    if (session?.startupId) {
+      startupsApi.getById(session.startupId).then(setSelectedStartup)
+      return
+    }
+
+    if (session?.role === 'startup' && session?.profile?.companyName) {
+      setSelectedStartup({
+        id: null,
+        companyName: session.profile.companyName,
+        industry: session.profile.industry,
+        teamSize: session.profile.teamSize,
+        desksNeeded: session.profile.desksNeeded,
+        daysNeeded: session.profile.daysNeeded,
+      })
+      return
+    }
+
+    setSelectedStartup(null)
+  }, [session])
 
   useEffect(() => {
     if (selectedStartup) {
-      bookingsApi.getByStartup(selectedStartup.id).then(setMyBookings)
+      if (selectedStartup.id) {
+        bookingsApi.getByStartup(selectedStartup.id).then(setMyBookings)
+      } else {
+        setMyBookings([])
+      }
 
       // Recommend listings matching their days
       const days = (selectedStartup.daysNeeded || '').split(',').map(d => d.trim())
@@ -33,46 +55,38 @@ export default function StartupDashboard() {
   }, [selectedStartup])
 
   const cancelBooking = async (bookingId) => {
+    if (!selectedStartup?.id) return
     await bookingsApi.updateStatus(bookingId, 'CANCELLED')
     bookingsApi.getByStartup(selectedStartup.id).then(setMyBookings)
   }
 
   // Stats
   const confirmedBookings = myBookings.filter(b => b.status === 'CONFIRMED')
+  const pendingBookings = myBookings.filter(b => b.status === 'PENDING')
   const totalSpent = confirmedBookings.reduce((s, b) => s + (b.totalPrice || 0), 0)
+  const recommendedAvgPrice = recommended.length
+    ? Math.round(recommended.reduce((sum, listing) => sum + (listing.pricePerDeskPerDay || 0), 0) / recommended.length)
+    : 0
+  const nextConfirmedDate = confirmedBookings
+    .map(booking => booking.bookingDate)
+    .filter(Boolean)
+    .sort()[0]
 
   return (
     <div className="dashboard">
       <div className="container">
         <div className="dash-header">
           <div>
-            <h1 className="dash-title">Startup Dashboard</h1>
+            <h1 className="dash-title">Space Seeker Dashboard</h1>
             <p className="text-muted">Find desks, manage bookings, and grow your team in the Loop.</p>
           </div>
         </div>
 
+        <div className="dash-page-image dash-page-image-startup" aria-hidden="true" />
+
         {!selectedStartup ? (
-          <div className="dash-select-section">
-            <h2 className="mb-4">Select your startup</h2>
-            <div className="host-grid">
-              {startupsList.map(s => (
-                <button
-                  key={s.id}
-                  className="host-select-card startup-card"
-                  onClick={() => setSelectedStartup(s)}
-                >
-                  <div className="host-select-icon startup-icon">
-                    <Rocket size={28} />
-                  </div>
-                  <h3>{s.companyName}</h3>
-                  <p className="text-sm text-muted">{s.industry}</p>
-                  <p className="text-xs text-muted">{s.teamSize} people · {s.desksNeeded} desks needed</p>
-                  <div className="mt-2">
-                    <DayChips days={s.daysNeeded} compact />
-                  </div>
-                </button>
-              ))}
-            </div>
+          <div className="dash-section">
+            <p className="text-muted">no bookings yet</p>
           </div>
         ) : (
           <>
@@ -91,9 +105,6 @@ export default function StartupDashboard() {
               </div>
               <div className="flex gap-3 items-center">
                 <DayChips days={selectedStartup.daysNeeded} compact />
-                <button className="btn btn-ghost" onClick={() => setSelectedStartup(null)}>
-                  Switch startup
-                </button>
               </div>
             </div>
 
@@ -121,6 +132,33 @@ export default function StartupDashboard() {
               </div>
             </div>
 
+            <div className="dash-highlight-grid">
+              <div className="dash-highlight-card">
+                <h3>Quick actions</h3>
+                <div className="dash-action-row">
+                  <Link to="/listings" className="btn btn-primary">
+                    <Search size={16} /> Find desks
+                  </Link>
+                  <Link to="/map" className="btn btn-secondary">
+                    <Compass size={16} /> Explore map
+                  </Link>
+                  <Link to="/profile" className="btn btn-outline">
+                    <UserCircle2 size={16} /> Edit profile
+                  </Link>
+                </div>
+              </div>
+
+              <div className="dash-highlight-card">
+                <h3>Planning snapshot</h3>
+                <div className="dash-inline-metrics">
+                  <p><strong>{pendingBookings.length}</strong> pending approvals</p>
+                  <p><strong>{recommended.length}</strong> recommended spaces</p>
+                  <p><strong>{recommendedAvgPrice ? `$${recommendedAvgPrice}` : '—'}</strong> avg desk/day in matches</p>
+                  <p><strong>{nextConfirmedDate || 'No date yet'}</strong> next confirmed booking</p>
+                </div>
+              </div>
+            </div>
+
             {/* My Bookings */}
             <div className="dash-section">
               <div className="dash-section-header">
@@ -134,7 +172,7 @@ export default function StartupDashboard() {
                   <thead>
                     <tr>
                       <th>Building</th>
-                      <th>Host</th>
+                      <th>Building Owner</th>
                       <th>Date</th>
                       <th>Desks</th>
                       <th>Total</th>

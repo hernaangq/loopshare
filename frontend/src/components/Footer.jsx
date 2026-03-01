@@ -14,14 +14,14 @@ export default function Footer() {
             <a href="#">How it Works</a>
           </div>
           <div className="footer-col">
-            <h4>For Hosts</h4>
-            <Link to="/host">Host Dashboard</Link>
+            <h4>For Building Owners</h4>
+            <Link to="/host">Building Owner Dashboard</Link>
             <a href="#">Tax Benefits (35 ILCS 5/203)</a>
             <a href="#">List Your Space</a>
           </div>
           <div className="footer-col">
-            <h4>For Startups</h4>
-            <Link to="/startup">Startup Dashboard</Link>
+            <h4>For Space Seekers</h4>
+            <Link to="/startup">Space Seeker Dashboard</Link>
             <a href="#">Enterprise Zone Savings</a>
             <a href="#">Find Space</a>
           </div>

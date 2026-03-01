@@ -32,7 +32,7 @@ export default function TaxEstimator() {
     const { desks, daysPerWeek, pricePerDesk, employeeCount, weeksPerYear } = form
     const totalDaysPerYear = daysPerWeek * weeksPerYear
 
-    // Direct revenue from startup rent
+    // Direct revenue from space seeker rent
     const directRevenue = desks * pricePerDesk * totalDaysPerYear
 
     // Fair Market Value of donated space
@@ -94,7 +94,7 @@ export default function TaxEstimator() {
 
       <div className="container tax-layout">
         {/* ────────── LEFT: Calculator ────────── */}
-        <div className="tax-calculator">
+        <div className="tax-calculator" style={{ marginTop: '4rem' }}>
           <div className="tax-card">
             <div className="tax-card-header">
               <Calculator size={20} />
@@ -111,7 +111,7 @@ export default function TaxEstimator() {
                   </button>
                 </label>
                 {activeInfo === 'desks' && (
-                  <p className="calc-info">Number of empty desks your company can offer to startups on remote-work days. Each desk ≈ 75 sq ft.</p>
+                  <p className="calc-info">Number of empty desks your company can offer to space seekers on remote-work days. Each desk ≈ 75 sq ft.</p>
                 )}
                 <input
                   type="range" min="1" max="100" value={form.desks}
@@ -155,7 +155,7 @@ export default function TaxEstimator() {
                   </button>
                 </label>
                 {activeInfo === 'price' && (
-                  <p className="calc-info">What you charge startups. Loop avg is $25-50/desk/day (vs. $75+ at WeWork).</p>
+                  <p className="calc-info">What you charge space seekers. Loop avg is $25-50/desk/day (vs. $75+ at WeWork).</p>
                 )}
                 <input
                   type="range" min="10" max="100" step="5" value={form.pricePerDesk}
@@ -231,7 +231,7 @@ export default function TaxEstimator() {
         </div>
 
         {/* ────────── RIGHT: Results ────────── */}
-        <div className="tax-results">
+        <div className="tax-results"style={{ marginTop: '4rem' }}>
           {/* Total Benefit */}
           <div className="tax-card tax-total-card">
             <p className="tax-total-label">Estimated Annual Economic Benefit</p>
@@ -312,7 +312,7 @@ export default function TaxEstimator() {
             <div className="tax-formula">
               <div className="formula-block">
                 <p className="formula-text">
-                  B<sub>total</sub> = (V<sub>fmv</sub> × 2 × R<sub>tax</sub>) + R<sub>startup</sub> + S<sub>impact</sub>
+                  B<sub>total</sub> = (V<sub>fmv</sub> × 2 × R<sub>tax</sub>) + R<sub>seeker</sub> + S<sub>impact</sub>
                 </p>
               </div>
               <div className="formula-legend">
@@ -329,8 +329,8 @@ export default function TaxEstimator() {
                   <span>IL Corporate Tax Rate = <strong>9.5%</strong></span>
                 </div>
                 <div className="legend-item">
-                  <span className="legend-var">R<sub>startup</sub></span>
-                  <span>Direct startup rent = <strong>${fmt(calc.directRevenue)}</strong></span>
+                  <span className="legend-var">R<sub>seeker</sub></span>
+                  <span>Direct space seeker rent = <strong>${fmt(calc.directRevenue)}</strong></span>
                 </div>
                 <div className="legend-item">
                   <span className="legend-var">S<sub>impact</sub></span>
@@ -372,7 +372,7 @@ export default function TaxEstimator() {
             <p>List your empty desks and start earning revenue while cutting your tax bill.</p>
             <div className="tax-cta-btns">
               <Link to="/host" className="btn btn-primary btn-lg">
-                Go to Host Dashboard <ArrowRight size={18} />
+                Go to Building Owner Dashboard <ArrowRight size={18} />
               </Link>
               <Link to="/listings" className="btn btn-outline btn-lg">
                 Browse Listings

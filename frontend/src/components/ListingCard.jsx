@@ -28,7 +28,7 @@ export default function ListingCard({ listing }) {
           </div>
         </div>
         <p className="listing-card-host text-muted text-sm">
-          Hosted by {host.companyName || 'Corporation'}
+          Building owner: {host.companyName || 'Corporation'}
         </p>
         <p className="listing-card-location text-muted text-sm">
           <MapPin size={13} /> {building.neighborhood || 'The Loop'}

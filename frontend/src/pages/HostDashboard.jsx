@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Building2, Plus, Users, DollarSign, TrendingUp, Calendar, Edit, Trash2, Eye } from 'lucide-react'
+import { Building2, Plus, Users, DollarSign, TrendingUp, Eye, Calculator, ArrowRight, Compass } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { hosts as hostsApi, listings as listingsApi, bookings as bookingsApi, buildings as buildingsApi } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import DayChips from '../components/DayChips'
 import './Dashboard.css'
 
 export default function HostDashboard() {
-  const [hosts, setHosts] = useState([])
+  const { session } = useAuth()
   const [selectedHost, setSelectedHost] = useState(null)
   const [hostListings, setHostListings] = useState([])
   const [hostBookings, setHostBookings] = useState([])
@@ -17,23 +18,48 @@ export default function HostDashboard() {
   })
 
   useEffect(() => {
-    hostsApi.getAll().then(setHosts)
     buildingsApi.getAll().then(setAllBuildings)
   }, [])
 
   useEffect(() => {
-    if (selectedHost) {
+    if (session?.hostId) {
+      hostsApi.getById(session.hostId).then(setSelectedHost)
+      return
+    }
+
+    if (session?.role === 'host' && session?.profile?.companyName) {
+      setSelectedHost({
+        id: null,
+        companyName: session.profile.companyName,
+        industry: session.profile.industry,
+        building: session.profile.buildingId ? { id: session.profile.buildingId, name: 'Selected building' } : null,
+      })
+      return
+    }
+
+    setSelectedHost(null)
+  }, [session])
+
+  useEffect(() => {
+    if (selectedHost?.id) {
       listingsApi.getByHost(selectedHost.id).then(data => {
         setHostListings(data)
         // Fetch bookings for all host listings
         Promise.all(data.map(l => bookingsApi.getByListing(l.id)))
           .then(results => setHostBookings(results.flat()))
       })
+    } else {
+      setHostListings([])
+      setHostBookings([])
     }
   }, [selectedHost])
 
   const handleCreateListing = async (e) => {
     e.preventDefault()
+    if (!selectedHost?.id) {
+      alert('Complete and save your profile first.')
+      return
+    }
     const selectedDays = newListing.daysAvailable
     try {
       await listingsApi.create({
@@ -75,6 +101,12 @@ export default function HostDashboard() {
     .filter(b => b.status === 'CONFIRMED')
     .reduce((s, b) => s + (b.totalPrice || 0), 0)
   const pendingBookings = hostBookings.filter(b => b.status === 'PENDING')
+  const confirmedBookings = hostBookings.filter(b => b.status === 'CONFIRMED')
+  const cancelledBookings = hostBookings.filter(b => b.status === 'CANCELLED')
+  const bookedDesks = confirmedBookings.reduce((sum, booking) => sum + (booking.desksBooked || 0), 0)
+  const avgBookingValue = confirmedBookings.length
+    ? Math.round(totalRevenue / confirmedBookings.length)
+    : 0
 
   return (
     <div className="dashboard">
@@ -82,32 +114,33 @@ export default function HostDashboard() {
         {/* Dashboard Header */}
         <div className="dash-header">
           <div>
-            <h1 className="dash-title">Host Dashboard</h1>
-            <p className="text-muted">Manage your desk listings and incoming bookings.</p>
+            <h1 className="dash-title">Manage your next bookings</h1>
+            <p className="text-muted">Manage your desk listings and upcoming booking requests.</p>
           </div>
         </div>
 
-        {/* Host Selector */}
+        <div className="dash-page-image dash-page-image-host" aria-hidden="true" />
+
         {!selectedHost ? (
-          <div className="dash-select-section">
-            <h2 className="mb-4">Select your company</h2>
-            <div className="host-grid">
-              {hosts.map(host => (
-                <button
-                  key={host.id}
-                  className="host-select-card"
-                  onClick={() => setSelectedHost(host)}
-                >
-                  <div className="host-select-icon">
-                    <Building2 size={28} />
-                  </div>
-                  <h3>{host.companyName}</h3>
-                  <p className="text-sm text-muted">{host.industry}</p>
-                  <p className="text-xs text-muted">{host.building?.name}</p>
-                </button>
-              ))}
+          <>
+            <div className="dash-section">
+              <p className="text-muted">No renters yet.</p>
             </div>
-          </div>
+            <div className="dash-estimator-spot">
+              <div className="dash-estimator-card">
+                <div className="dash-estimator-icon">
+                  <Calculator size={20} />
+                </div>
+                <div>
+                  <h2>Tax Estimator</h2>
+                  <p className="text-muted">Estimate your Enterprise Zone tax benefit while you manage bookings.</p>
+                </div>
+                <Link to="/taxes" className="btn btn-secondary">
+                  Open Estimator <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+          </>
         ) : (
           <>
             {/* Company Info Bar */}
@@ -123,9 +156,6 @@ export default function HostDashboard() {
                   </p>
                 </div>
               </div>
-              <button className="btn btn-ghost" onClick={() => setSelectedHost(null)}>
-                Switch company
-              </button>
             </div>
 
             {/* Stats */}
@@ -149,6 +179,34 @@ export default function HostDashboard() {
                 <TrendingUp size={20} color="var(--ls-warning)" />
                 <p className="dash-stat-num">${(totalRevenue * 2).toLocaleString()}</p>
                 <p className="dash-stat-label">Tax Deduction (2x)</p>
+              </div>
+            </div>
+
+            <div className="dash-highlight-grid">
+              <div className="dash-highlight-card">
+                <h3>Quick actions</h3>
+                <div className="dash-action-row">
+                  <button className="btn btn-primary" onClick={() => setShowNewListing(true)}>
+                    <Plus size={16} /> New listing
+                  </button>
+                  <Link to="/taxes" className="btn btn-secondary">
+                    <Calculator size={16} /> Tax Estimator
+                  </Link>
+                  <Link to="/map" className="btn btn-outline">
+                    <Compass size={16} /> Map view
+                  </Link>
+                </div>
+              </div>
+
+              <div className="dash-highlight-card">
+                <h3>Portfolio snapshot</h3>
+                <div className="dash-inline-metrics">
+                  <p><strong>{pendingBookings.length}</strong> pending requests</p>
+                  <p><strong>{confirmedBookings.length}</strong> confirmed bookings</p>
+                  <p><strong>{cancelledBookings.length}</strong> cancelled bookings</p>
+                  <p><strong>{bookedDesks}</strong> desks booked this period</p>
+                  <p><strong>${avgBookingValue.toLocaleString()}</strong> average booking value</p>
+                </div>
               </div>
             </div>
 
@@ -239,7 +297,7 @@ export default function HostDashboard() {
                 <table className="dash-table">
                   <thead>
                     <tr>
-                      <th>Startup</th>
+                      <th>Space Seeker</th>
                       <th>Date</th>
                       <th>Desks</th>
                       <th>Total</th>

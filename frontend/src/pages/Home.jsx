@@ -1,124 +1,157 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Search, Building2, Users, TrendingUp, ArrowRight, MapPin, Shield, Map } from 'lucide-react'
-import { listings as listingsApi, buildings as buildingsApi } from '../services/api'
+import { Link, useNavigate } from 'react-router-dom'
+import { Search, Building2, ArrowRight, MapPin, Map } from 'lucide-react'
+import { listings as listingsApi } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import ListingCard from '../components/ListingCard'
+import { LOOP_ZONES, SEARCH_DAYS, SEARCH_STORAGE_KEY } from '../constants/searchOptions'
+import ctaImage from '../images/cta.png'
 import './Home.css'
 
 export default function Home() {
+  const navigate = useNavigate()
+  const { isAuthenticated, role } = useAuth()
   const [featuredListings, setFeaturedListings] = useState([])
-  const [buildingCount, setBuildingCount] = useState(0)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchForm, setSearchForm] = useState({
+    neighborhood: 'The Loop',
+    day: '',
+    desks: '',
+  })
+
+  const buildingOwnerCtaTarget = isAuthenticated
+    ? (role === 'host' ? '/host' : '/login')
+    : '/login'
+
+  const spaceSeekerCtaTarget = isAuthenticated
+    ? (role === 'startup' ? '/startup' : '/login')
+    : '/login'
 
   useEffect(() => {
     listingsApi.getActive().then(data => setFeaturedListings(data.slice(0, 4)))
-    buildingsApi.getAll().then(data => setBuildingCount(data.length))
   }, [])
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SEARCH_STORAGE_KEY)
+      if (!saved) return
+      const parsed = JSON.parse(saved)
+      setSearchForm({
+        neighborhood: parsed.neighborhood ?? 'The Loop',
+        day: parsed.day || '',
+        desks: parsed.desks || '',
+      })
+    } catch {
+      localStorage.removeItem(SEARCH_STORAGE_KEY)
+    }
+  }, [])
+
+  const handleHeroSearch = (e) => {
+    e.preventDefault()
+    const params = new URLSearchParams()
+    if (searchForm.neighborhood) params.set('neighborhood', searchForm.neighborhood)
+    if (searchForm.day) params.set('day', searchForm.day)
+    if (searchForm.desks) params.set('desks', searchForm.desks)
+
+    localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(searchForm))
+    navigate(`/listings?${params.toString()}`)
+  }
 
   return (
     <div className="home">
       {/* Hero */}
       <section className="hero">
-        <div className="hero-bg" />
+        <div className="hero-bg" style={{ backgroundImage: `url(${ctaImage})` }} />
         <div className="hero-content container">
-          <div className="hero-split">
-            <div className="hero-split-left">
-              <h1 className="hero-title">
-                Find your startup's next
-                <br />
-                <span className="hero-highlight">home in the Loop</span>
-              </h1>
-              <p className="hero-subtitle">
-                Premium corporate desks, daily rentals. Save money while revitalizing Chicago's downtown.
-              </p>
-            </div>
-            <div className="hero-split-right">
-              <h1 className="hero-title">
-                Turn empty desks into
-                <br />
-                <span className="hero-highlight-host">tax-free revenue</span>
-              </h1>
-              <p className="hero-subtitle">
-                Earn a 2× tax deduction under the Illinois Enterprise Zone Act. Your vacancy becomes income.
-              </p>
-            </div>
-          </div>
+          <div className="hero-simple">
+            <h1 className="hero-title">
+              Shared desks in <span className="hero-highlight">Chicago Loop</span>
+            </h1>
+            <p className="hero-subtitle">
+              Use underused vacant office space and bring life back to the Loop.
+            </p>
 
-          {/* Airbnb-style search bar */}
-          <div className="hero-search">
-            <div className="hero-search-bar">
-              <div className="hero-search-section">
-                <label>Neighborhood</label>
-                <input placeholder="The Loop, West Loop..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-              </div>
-              <span className="hero-search-divider" />
-              <div className="hero-search-section">
-                <label>Day</label>
-                <select>
-                  <option value="">Any day</option>
-                  <option>MONDAY</option>
-                  <option>TUESDAY</option>
-                  <option>WEDNESDAY</option>
-                  <option>THURSDAY</option>
-                  <option>FRIDAY</option>
-                </select>
-              </div>
-              <span className="hero-search-divider" />
-              <div className="hero-search-section">
-                <label>Desks</label>
-                <input type="number" placeholder="How many?" min="1" />
-              </div>
-              <Link to="/listings" className="hero-search-btn">
-                <Search size={20} />
-              </Link>
+            <div className="hero-search">
+              <form className="hero-search-bar" onSubmit={handleHeroSearch}>
+                <div className="hero-search-section">
+                  <label>Neighborhood</label>
+                  <select
+                    value={searchForm.neighborhood}
+                    onChange={e => setSearchForm({ ...searchForm, neighborhood: e.target.value })}
+                  >
+                    {LOOP_ZONES.map((zone) => (
+                      <option key={zone.label} value={zone.value}>{zone.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <span className="hero-search-divider" />
+                <div className="hero-search-section">
+                  <label>Day</label>
+                  <select
+                    value={searchForm.day}
+                    onChange={e => setSearchForm({ ...searchForm, day: e.target.value })}
+                  >
+                    {SEARCH_DAYS.map((dayOption) => (
+                      <option key={dayOption.label} value={dayOption.value}>{dayOption.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <span className="hero-search-divider" />
+                <div className="hero-search-section">
+                  <label>Desks</label>
+                  <input
+                    type="number"
+                    placeholder="How many?"
+                    min="1"
+                    value={searchForm.desks}
+                    onChange={e => setSearchForm({ ...searchForm, desks: e.target.value })}
+                  />
+                </div>
+                <button type="submit" className="hero-search-btn" aria-label="Search listings">
+                  <Search size={20} />
+                </button>
+              </form>
             </div>
+
+            <Link to="/map" className="hero-map-btn">
+              <Map size={18} /> Explore on map
+            </Link>
           </div>
-          <Link to="/map" className="hero-map-btn" style={{display: 'flex', width: 'fit-content', margin: '16px auto 0'}}>
-            <Map size={18} /> Explore on map
-          </Link>
         </div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="stats-bar">
+      {/* How It Works */}
+      <section className="section how-it-works" style={{ marginTop: '4rem' }}>
         <div className="container">
-          <div className="stats-grid">
-            <div className="stat-item">
-              <Building2 size={24} color="var(--ls-primary)" />
-              <div>
-                <p className="stat-number">{buildingCount}</p>
-                <p className="stat-label">Buildings</p>
+          <h2 className="section-title text-center mb-6">How LoopShare works</h2>
+          <div className="hiw-grid">
+            <div className="hiw-card">
+              <div className="hiw-icon">
+                <Building2 size={32} />
               </div>
+              <h3>Building owners list ghost desks</h3>
+              <p>Corporations post empty desks on days their teams work remotely. Turn vacancy into revenue + earn a double tax deduction.</p>
             </div>
-            <div className="stat-item">
-              <Users size={24} color="var(--ls-primary)" />
-              <div>
-                <p className="stat-number">
-                  {featuredListings.reduce((sum, l) => sum + (l.desksAvailable || 0), 0)}+
-                </p>
-                <p className="stat-label">Desks Available</p>
+            <div className="hiw-card">
+              <div className="hiw-icon">
+                <Search size={32} />
               </div>
+              <h3>Space seekers search & book</h3>
+              <p>Filter by day, desk count, and neighborhood. Book premium Loop office space at a fraction of traditional coworking costs.</p>
             </div>
-            <div className="stat-item">
-              <TrendingUp size={24} color="var(--ls-primary)" />
-              <div>
-                <p className="stat-number">2x</p>
-                <p className="stat-label">Tax Deduction</p>
+            <div className="hiw-card">
+              <div className="hiw-icon">
+                <MapPin size={32} />
               </div>
-            </div>
-            <div className="stat-item">
-              <Shield size={24} color="var(--ls-primary)" />
-              <div>
-                <p className="stat-number">35 ILCS</p>
-                <p className="stat-label">Enterprise Zone Act</p>
-              </div>
+              <h3>Meet in the Loop</h3>
+              <p>Show up, plug in, and work from iconic Chicago buildings. Support local cafes and help revitalize downtown.</p>
             </div>
           </div>
         </div>
       </section>
 
+      
       {/* Featured Listings */}
-      <section className="section container">
+      <section className="section container featured-section">
         <div className="section-header">
           <div>
             <h2 className="section-title">Featured desks in the Loop</h2>
@@ -134,51 +167,22 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-      {/* How It Works */}
-      <section className="section how-it-works">
-        <div className="container">
-          <h2 className="section-title text-center mb-6">How LoopShare works</h2>
-          <div className="hiw-grid">
-            <div className="hiw-card">
-              <div className="hiw-icon">
-                <Building2 size={32} />
-              </div>
-              <h3>Hosts list ghost desks</h3>
-              <p>Corporations post empty desks on days their teams work remotely. Turn vacancy into revenue + earn a double tax deduction.</p>
-            </div>
-            <div className="hiw-card">
-              <div className="hiw-icon">
-                <Search size={32} />
-              </div>
-              <h3>Startups search & book</h3>
-              <p>Filter by day, desk count, and neighborhood. Book premium Loop office space at a fraction of traditional coworking costs.</p>
-            </div>
-            <div className="hiw-card">
-              <div className="hiw-icon">
-                <MapPin size={32} />
-              </div>
-              <h3>Meet in the Loop</h3>
-              <p>Show up, plug in, and work from iconic Chicago buildings. Support local cafes and help revitalize downtown.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      
 
       {/* CTA for both user types */}
-      <section className="section container">
+      <section className="section container home-cta-section" style={{ marginTop: '4rem' }}>
         <div className="cta-grid">
           <div className="cta-card cta-host">
-            <h3>For Corporations</h3>
+            <h3>For Building Owners</h3>
             <p>Turn empty desks into tax-deductible revenue under the Illinois Enterprise Zone Act.</p>
-            <Link to="/host" className="btn btn-primary btn-lg">
-              Start hosting <ArrowRight size={18} />
+            <Link to={buildingOwnerCtaTarget} className="btn btn-primary btn-lg">
+              Become a building owner <ArrowRight size={18} />
             </Link>
           </div>
           <div className="cta-card cta-startup">
-            <h3>For Startups</h3>
+            <h3>For Space Seekers</h3>
             <p>Get premium Loop office space for your team — daily, flexible, affordable.</p>
-            <Link to="/startup" className="btn btn-secondary btn-lg">
+            <Link to={spaceSeekerCtaTarget} className="btn btn-secondary btn-lg">
               Find a desk <ArrowRight size={18} />
             </Link>
           </div>

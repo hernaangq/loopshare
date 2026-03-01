@@ -1,7 +1,7 @@
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1200;
   background: var(--ls-white);
   border-bottom: 1px solid var(--ls-gray-200);
 }
@@ -21,34 +21,26 @@
   flex-shrink: 0;
 }
 
-.chicago-flag-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--ls-gray-200);
-  background: var(--ls-white);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-  padding: 5px 4px;
-  box-shadow: var(--shadow-sm);
-}
-
-.flag-stripe {
-  width: 100%;
-  height: 3px;
-  border-radius: 999px;
-  background: var(--ls-primary);
-}
-
-.flag-stars {
+.loop-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0b5cab, #41b6e6);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  color: var(--ls-accent);
-  line-height: 1;
+  box-shadow: 0 8px 18px rgba(11, 92, 171, 0.28);
+}
+
+.loop-mark-ring {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ls-white);
 }
 
 .navbar-logo-text {
@@ -82,6 +74,26 @@
   cursor: pointer;
 }
 
+.search-pill-form {
+  cursor: default;
+}
+
+.search-pill-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 130px;
+  color: var(--ls-black);
+  padding: 0 16px;
+}
+
+.search-pill-select {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
 .search-pill:hover {
   box-shadow: var(--shadow-lg);
 }
@@ -106,6 +118,10 @@
   align-items: center;
   justify-content: center;
   margin-left: 8px;
+}
+
+.search-pill-btn:hover {
+  filter: brightness(0.95);
 }
 
 /* Right */
@@ -184,12 +200,14 @@
   box-shadow: var(--shadow-xl);
   border: 1px solid var(--ls-gray-100);
   padding: 8px 0;
-  z-index: 200;
+  z-index: 1300;
   animation: fadeIn 0.15s ease;
 }
 
 .dropdown-item {
   display: block;
+  width: 100%;
+  text-align: left;
   padding: 10px 16px;
   font-size: 14px;
   transition: background 0.15s;
@@ -205,8 +223,12 @@
   margin: 4px 0;
 }
 
+.dropdown-logout {
+  color: var(--ls-accent);
+}
+
 @media (max-width: 768px) {
   .navbar-inner { height: 64px; }
   .navbar-logo-text { font-size: 18px; }
-  .chicago-flag-logo { width: 32px; height: 32px; }
+  .loop-mark { width: 34px; height: 34px; }
 }

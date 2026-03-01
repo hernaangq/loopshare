@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Search, SlidersHorizontal, Map } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { listings as listingsApi } from '../services/api'
 import ListingCard from '../components/ListingCard'
 import DayChips from '../components/DayChips'
@@ -9,8 +9,10 @@ import './Listings.css'
 const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY']
 
 export default function Listings() {
+  const [searchParams] = useSearchParams()
   const [allListings, setAllListings] = useState([])
   const [filtered, setFiltered] = useState([])
+  const [neighborhoodQuery, setNeighborhoodQuery] = useState('')
   const [selectedDay, setSelectedDay] = useState('')
   const [minDesks, setMinDesks] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
@@ -25,7 +27,27 @@ export default function Listings() {
   }, [])
 
   useEffect(() => {
+    const qNeighborhood = searchParams.get('neighborhood') || ''
+    const qDay = searchParams.get('day') || ''
+    const qDesks = searchParams.get('desks') || ''
+
+    setNeighborhoodQuery(qNeighborhood)
+    setSelectedDay(qDay)
+    setMinDesks(qDesks)
+  }, [searchParams])
+
+  useEffect(() => {
     let result = [...allListings]
+    if (neighborhoodQuery) {
+      const q = neighborhoodQuery.toLowerCase()
+      result = result.filter(l => {
+        const building = l.building || {}
+        const name = (building.name || '').toLowerCase()
+        const neighborhood = (building.neighborhood || '').toLowerCase()
+        const address = (building.address || '').toLowerCase()
+        return name.includes(q) || neighborhood.includes(q) || address.includes(q)
+      })
+    }
     if (selectedDay) {
       result = result.filter(l =>
         l.daysAvailable && l.daysAvailable.includes(selectedDay)
@@ -38,7 +60,7 @@ export default function Listings() {
       result = result.filter(l => l.pricePerDeskPerDay <= parseFloat(maxPrice))
     }
     setFiltered(result)
-  }, [selectedDay, minDesks, maxPrice, allListings])
+  }, [neighborhoodQuery, selectedDay, minDesks, maxPrice, allListings])
 
   return (
     <div className="listings-page">

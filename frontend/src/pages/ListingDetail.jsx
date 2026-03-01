@@ -3,8 +3,9 @@ import { useParams, Link } from 'react-router-dom'
 import { MapPin, Users, DollarSign, Star, Building2, Wifi, Coffee, Car, Shield, Calendar, ArrowLeft } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
-import { listings as listingsApi, bookings as bookingsApi, startups as startupsApi } from '../services/api'
+import { listings as listingsApi, bookings as bookingsApi } from '../services/api'
 import DayChips from '../components/DayChips'
+import { useAuth } from '../context/AuthContext'
 import 'leaflet/dist/leaflet.css'
 import './ListingDetail.css'
 
@@ -24,37 +25,82 @@ const AMENITY_ICONS = {
   Security: Shield,
 }
 
+const WEEKDAY_MAP = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
+
+function toIsoDate(date) {
+  const year = date.getFullYear()
+  const month = `${date.getMonth() + 1}`.padStart(2, '0')
+  const day = `${date.getDate()}`.padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function buildDateRange(startDate, endDate) {
+  if (!startDate || !endDate) return []
+  const start = new Date(`${startDate}T00:00:00`)
+  const end = new Date(`${endDate}T00:00:00`)
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end < start) return []
+
+  const allDates = []
+  const cursor = new Date(start)
+  while (cursor <= end) {
+    allDates.push(new Date(cursor))
+    cursor.setDate(cursor.getDate() + 1)
+  }
+  return allDates
+}
+
 export default function ListingDetail() {
   const { id } = useParams()
+  const { isAuthenticated, role, session } = useAuth()
   const [listing, setListing] = useState(null)
-  const [startupList, setStartupList] = useState([])
-  const [bookingForm, setBookingForm] = useState({ startupId: '', desks: 1, date: '' })
+  const [bookingForm, setBookingForm] = useState({ desks: 1, startDate: '', endDate: '' })
   const [bookingSuccess, setBookingSuccess] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([
-      listingsApi.getById(id),
-      startupsApi.getAll(),
-    ]).then(([listingData, startupData]) => {
+    listingsApi.getById(id).then((listingData) => {
       setListing(listingData)
-      setStartupList(startupData)
       setLoading(false)
     })
   }, [id])
 
   const handleBook = async (e) => {
     e.preventDefault()
-    if (!bookingForm.startupId || !bookingForm.date) return
+    if (!bookingForm.startDate || !bookingForm.endDate) return
+
+    if (!isAuthenticated || role !== 'startup' || !session?.startupId) {
+      alert('Sign in as a space seeker to reserve desks.')
+      return
+    }
+
+    const availableWeekdays = new Set((listing.daysAvailable || '').split(',').map(day => day.trim()).filter(Boolean))
+    const rangeDates = buildDateRange(bookingForm.startDate, bookingForm.endDate)
+    if (rangeDates.length === 0) {
+      alert('Select a valid date range.')
+      return
+    }
+
+    const validBookingDates = rangeDates
+      .filter((dateObj) => availableWeekdays.has(WEEKDAY_MAP[dateObj.getDay()]))
+      .map(toIsoDate)
+
+    if (validBookingDates.length === 0) {
+      alert('Selected range has no days available for this listing.')
+      return
+    }
+
+    const desksBooked = parseInt(bookingForm.desks)
+    const totalForRange = desksBooked * listing.pricePerDeskPerDay * validBookingDates.length
+
     try {
-      await bookingsApi.create({
+      await Promise.all(validBookingDates.map((bookingDate) => bookingsApi.create({
         listing: { id: listing.id },
-        startup: { id: parseInt(bookingForm.startupId) },
-        bookingDate: bookingForm.date,
-        desksBooked: parseInt(bookingForm.desks),
-        totalPrice: parseInt(bookingForm.desks) * listing.pricePerDeskPerDay,
+        startup: { id: parseInt(session.startupId) },
+        bookingDate,
+        desksBooked,
+        totalPrice: desksBooked * listing.pricePerDeskPerDay,
         status: 'PENDING',
-      })
+      })))
       setBookingSuccess(true)
     } catch (err) {
       alert('Booking failed: ' + err.message)
@@ -67,6 +113,10 @@ export default function ListingDetail() {
   const building = listing.building || {}
   const host = listing.host || {}
   const amenities = (building.amenities || '').split(',').map(a => a.trim()).filter(Boolean)
+  const rangeDates = buildDateRange(bookingForm.startDate, bookingForm.endDate)
+  const availableWeekdays = new Set((listing.daysAvailable || '').split(',').map(day => day.trim()).filter(Boolean))
+  const billableDays = rangeDates.filter((dateObj) => availableWeekdays.has(WEEKDAY_MAP[dateObj.getDay()])).length
+  const rangeTotal = listing.pricePerDeskPerDay * bookingForm.desks * billableDays
 
   return (
     <div className="detail-page container">
@@ -101,13 +151,13 @@ export default function ListingDetail() {
 
           <div className="divider" />
 
-          {/* Host Info */}
+          {/* Building Owner Info */}
           <div className="detail-host">
             <div className="detail-host-avatar">
               <Building2 size={24} />
             </div>
             <div>
-              <p className="font-semibold">Hosted by {host.companyName}</p>
+              <p className="font-semibold">Building owner: {host.companyName}</p>
               <p className="text-sm text-muted">{host.industry} · {host.employeeCount?.toLocaleString()} employees</p>
             </div>
           </div>
@@ -149,7 +199,7 @@ export default function ListingDetail() {
               <DollarSign size={20} />
               <div>
                 <p className="font-semibold">${listing.pricePerDeskPerDay} / desk / day</p>
-                <p className="text-xs text-muted">Tax-deductible for hosts</p>
+                <p className="text-xs text-muted">Tax-deductible for building owners</p>
               </div>
             </div>
             <div className="detail-info-item">
@@ -227,7 +277,7 @@ export default function ListingDetail() {
               <div className="booking-success">
                 <Shield size={32} color="var(--ls-success)" />
                 <h4>Booking submitted!</h4>
-                <p className="text-sm text-muted">Status: PENDING. The host will confirm shortly.</p>
+                <p className="text-sm text-muted">Status: PENDING. The building owner will confirm shortly.</p>
                 <button className="btn btn-outline mt-4" onClick={() => setBookingSuccess(false)}>
                   Book again
                 </button>
@@ -236,26 +286,31 @@ export default function ListingDetail() {
               <form onSubmit={handleBook} className="booking-form">
                 <div className="booking-form-grid">
                   <div className="input-group">
-                    <label>Your startup</label>
-                    <select
+                    <label>Your space seeker profile</label>
+                    <input
                       className="input-field"
-                      value={bookingForm.startupId}
-                      onChange={e => setBookingForm({...bookingForm, startupId: e.target.value})}
-                      required
-                    >
-                      <option value="">Select startup...</option>
-                      {startupList.map(s => (
-                        <option key={s.id} value={s.id}>{s.companyName}</option>
-                      ))}
-                    </select>
+                      value={role === 'startup' ? (session?.displayName || '') : 'Sign in as space seeker'}
+                      readOnly
+                    />
                   </div>
                   <div className="input-group">
-                    <label>Date</label>
+                    <label>Start date</label>
                     <input
                       type="date"
                       className="input-field"
-                      value={bookingForm.date}
-                      onChange={e => setBookingForm({...bookingForm, date: e.target.value})}
+                      value={bookingForm.startDate}
+                      onChange={e => setBookingForm({...bookingForm, startDate: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>End date</label>
+                    <input
+                      type="date"
+                      className="input-field"
+                      value={bookingForm.endDate}
+                      min={bookingForm.startDate || undefined}
+                      onChange={e => setBookingForm({...bookingForm, endDate: e.target.value})}
                       required
                     />
                   </div>
@@ -275,23 +330,30 @@ export default function ListingDetail() {
 
                 <div className="booking-summary">
                   <div className="booking-line">
-                    <span>${listing.pricePerDeskPerDay} × {bookingForm.desks} desk{bookingForm.desks > 1 ? 's' : ''}</span>
-                    <span>${(listing.pricePerDeskPerDay * bookingForm.desks).toFixed(2)}</span>
+                    <span>${listing.pricePerDeskPerDay} × {bookingForm.desks} desk{bookingForm.desks > 1 ? 's' : ''} × {billableDays} day{billableDays !== 1 ? 's' : ''}</span>
+                    <span>${rangeTotal.toFixed(2)}</span>
                   </div>
                   <div className="booking-line booking-total">
                     <span>Total</span>
-                    <span>${(listing.pricePerDeskPerDay * bookingForm.desks).toFixed(2)}</span>
+                    <span>${rangeTotal.toFixed(2)}</span>
                   </div>
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-lg" style={{width: '100%'}}>
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg"
+                  style={{width: '100%'}}
+                  disabled={!isAuthenticated || role !== 'startup' || !session?.startupId}
+                >
                   Reserve desks
                 </button>
               </form>
             )}
 
             <p className="booking-note text-xs text-muted text-center mt-2">
-              You won't be charged yet. Host confirmation required.
+              {!isAuthenticated || role !== 'startup'
+                ? 'Sign in as space seeker to reserve desks.'
+                : "You won't be charged yet. Building owner confirmation required."}
             </p>
           </div>
         </div>

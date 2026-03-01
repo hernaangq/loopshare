@@ -2,16 +2,71 @@
 
 .dashboard {
   padding: 32px 0 64px;
+  background: var(--ls-gray-100);
 }
 
 .dash-header {
   margin-bottom: 32px;
 }
 
+.dash-page-image {
+  width: 100%;
+  height: 340px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: var(--shadow-md);
+}
+
+.dash-page-image-host {
+  background-image: url('../images/river_walk.png');
+}
+
+.dash-page-image-startup {
+  background-image: url('../images/street.png');
+}
+
 .dash-title {
   font-size: 32px;
   font-weight: 800;
   letter-spacing: -0.02em;
+}
+
+.dash-estimator-spot {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.dash-estimator-card {
+  width: min(760px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 22px;
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #eff8ff, #ffffff);
+}
+
+.dash-estimator-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.dash-estimator-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(11, 92, 171, 0.12);
+  color: var(--ls-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 /* Host/Startup Selector */
@@ -137,6 +192,46 @@
 /* Sections */
 .dash-section {
   margin-bottom: 40px;
+  background: var(--ls-white);
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.dash-highlight-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.dash-highlight-card {
+  background: var(--ls-white);
+  border: 1px solid var(--ls-gray-200);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.dash-highlight-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.dash-action-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dash-inline-metrics {
+  display: grid;
+  gap: 8px;
+}
+
+.dash-inline-metrics p {
+  color: var(--ls-gray-600);
+  font-size: 14px;
 }
 
 .dash-section-header {
@@ -224,8 +319,11 @@
 }
 
 @media (max-width: 768px) {
+  .dash-page-image { height: 240px; }
   .dash-stats { grid-template-columns: repeat(2, 1fr); }
   .host-grid { grid-template-columns: repeat(2, 1fr); }
   .form-grid { grid-template-columns: 1fr; }
   .dash-company-bar { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .dash-estimator-card { flex-direction: column; align-items: flex-start; }
+  .dash-highlight-grid { grid-template-columns: 1fr; }
 }

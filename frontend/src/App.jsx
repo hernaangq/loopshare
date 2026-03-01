@@ -8,6 +8,10 @@ import MapExplore from './pages/MapExplore'
 import HostDashboard from './pages/HostDashboard'
 import StartupDashboard from './pages/StartupDashboard'
 import TaxEstimator from './pages/TaxEstimator'
+import Login from './pages/Login'
+import SignIn from './pages/SignIn'
+import EditProfile from './pages/EditProfile'
+import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
   return (
@@ -16,12 +20,43 @@ export default function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/listings" element={<Listings />} />
           <Route path="/listings/:id" element={<ListingDetail />} />
           <Route path="/map" element={<MapExplore />} />
-          <Route path="/host" element={<HostDashboard />} />
-          <Route path="/startup" element={<StartupDashboard />} />
-          <Route path="/taxes" element={<TaxEstimator />} />
+          <Route
+            path="/profile"
+            element={(
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            )}
+          />
+          <Route
+            path="/host"
+            element={(
+              <ProtectedRoute allowedRoles={['host']}>
+                <HostDashboard />
+              </ProtectedRoute>
+            )}
+          />
+          <Route
+            path="/startup"
+            element={(
+              <ProtectedRoute allowedRoles={['startup']}>
+                <StartupDashboard />
+              </ProtectedRoute>
+            )}
+          />
+          <Route
+            path="/taxes"
+            element={(
+              <ProtectedRoute allowedRoles={['host']}>
+                <TaxEstimator />
+              </ProtectedRoute>
+            )}
+          />
         </Routes>
       </main>
       <Footer />
